@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="cndoppler.cn.wifiprobe.activity.RecordListActivity">
+    <LinearLayout
+        android:id="@+id/top_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#565656"
+        android:gravity="center_vertical"
+        >
+        <ImageView
+            android:id="@+id/back_iv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/icon_pre_activity"
+            android:padding="5dp"/>
+        <EditText
+            android:id="@+id/search_record_et"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="请输入病原信息"
+            android:drawableLeft="@drawable/icon_search"
+            android:drawablePadding="5dp"
+            android:layout_weight="1"/>
+        <Button
+            android:id="@+id/add_record_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="新增"
+            android:layout_margin="5dp"/>
+
+
+    </LinearLayout>
+    <TextView
+        android:id="@+id/norecord_tv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/top_layout"
+        android:gravity="center"
+        android:textSize="20sp"
+        android:text="暂没有病人信息，请先新增"/>
+    <ListView
+        android:id="@+id/patient_lv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/top_layout">
+    </ListView>
+</RelativeLayout>
