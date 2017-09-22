@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -25,6 +26,7 @@ public class RecordListActivity extends BaseActivity {
     private List<Patient> patients;
     private PatientAdapter adapter;
     private TextView noRecordTv;
+    private ImageView backIv;
     public static final int UPDATE_REQUEST_CODE = 2;
     public static final int UPDATA_RESULT_CODE = 3;
     public static final int ADD_PATIENT_CODE = 0;
@@ -56,6 +58,15 @@ public class RecordListActivity extends BaseActivity {
             }
         });
         noRecordTv = findViewById(R.id.norecord_tv);
+        backIv = findViewById(R.id.back_iv);
+        backIv.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                finish();
+            }
+        });
     }
 
     @Override

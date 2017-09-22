@@ -15,66 +15,84 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="病人编号:"
+                    android:textSize="20sp"/>
+                <TextView
+                    android:id="@+id/number_tv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="20sp"
+                    />
+            </LinearLayout>
+
 
             <EditText
+                android:id="@+id/name_et"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
                 android:hint="请输入病人姓名" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:gravity="center">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="性别："
+                    android:textSize="20sp"/>
+                <RadioGroup
+                    android:id="@+id/sex_rg"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
 
-            <EditText
+                    android:orientation="horizontal">
+
+                    <RadioButton
+                        android:id="@+id/man_rb"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="10dp"
+                        android:text="男"/>
+                    <RadioButton
+                        android:id="@+id/woman_rb"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="女"
+                        android:layout_weight="1"/>
+                    <RadioButton
+                        android:id="@+id/unknown_rb"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="未知"
+                        android:layout_weight="1"/>
+                </RadioGroup>
+            </LinearLayout>
+
+
+            <TextView
+                android:id="@+id/birthday_tv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
-                android:hint="请输入病人姓名" />
-
-            <EditText
-                android:layout_width="match_parent"
+                android:textSize="20sp"
+                android:text="生日日期:"/>
+            <DatePicker
+                android:id="@+id/birthday_dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:hint="请输入病人姓名" />
+                android:layout_marginLeft="20dp">
 
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:hint="请输入病人姓名" />
-
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:hint="请输入病人姓名" />
-
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:hint="请输入病人姓名" />
-
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:hint="请输入病人姓名" />
-
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:hint="请输入病人姓名" />
-
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:hint="请输入病人姓名" />
-
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:hint="请输入病人姓名" />
+            </DatePicker>
         </LinearLayout>
     </ScrollView>
 

@@ -64,8 +64,8 @@ public class PatientAdapter extends BaseAdapter {
             converView.setBackgroundColor(Color.parseColor("#ffffff"));
         }
         final Patient patient = patients.get(position);
-        holder.patientTv.setText("病人："+patient.getName()+"  身高："+patient.getBodyHeight()+"cm   体重："+patient.getWeight()+"kg");
-        holder.doctorTv.setText("主治医师："+patient.getDoctor());
+        holder.patientTv.setText("病人："+patient.getName());
+        holder.doctorTv.setText("主治医师：");
         holder.delectBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
