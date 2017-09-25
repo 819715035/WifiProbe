@@ -8,10 +8,12 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.util.Date;
 import java.util.List;
 
 import cndoppler.cn.wifiprobe.R;
 import cndoppler.cn.wifiprobe.bean.Patient;
+import cndoppler.cn.wifiprobe.utils.DateUtils;
 
 /**
  * Created by Administrator on 2017/9/21 0021.
@@ -52,7 +54,6 @@ public class PatientAdapter extends BaseAdapter {
             converView = View.inflate(context, R.layout.item_patient,null);
             holder.patientTv = converView.findViewById(R.id.patient_tv);
             holder.doctorTv = converView.findViewById(R.id.doctor_tv);
-            holder.updateBtn = converView.findViewById(R.id.update_btn);
             holder.delectBtn = converView.findViewById(R.id.delect_btn);
             converView.setTag(holder);
         }else{
@@ -64,21 +65,13 @@ public class PatientAdapter extends BaseAdapter {
             converView.setBackgroundColor(Color.parseColor("#ffffff"));
         }
         final Patient patient = patients.get(position);
-        holder.patientTv.setText("病人："+patient.getName());
-        holder.doctorTv.setText("主治医师：");
+        holder.patientTv.setText("病人ID："+patient.getNumber()+"   名字："+patient.getName()+"   年龄："+patient.getAge());
+        holder.doctorTv.setText("建表时间："+ DateUtils.formatDatetime(new Date(patient.getDate())));
         holder.delectBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (listener!=null){
                     listener.onDelectListener(patient);
-                }
-            }
-        });
-        holder.updateBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (listener!=null){
-                    listener.onUpdateListener(patient,position);
                 }
             }
         });
@@ -88,12 +81,10 @@ public class PatientAdapter extends BaseAdapter {
     class Holder{
         private TextView patientTv;
         private TextView doctorTv;
-        private Button updateBtn;
         private Button delectBtn;
     }
 
     public interface OnPatientItemClickListener{
         public void onDelectListener(Patient patient);
-        public void onUpdateListener(Patient patient,int position);
     }
 }

@@ -29,6 +29,7 @@
                 android:id="@+id/patient_tv"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
+                android:padding="10dp"
                 android:layout_weight="1"/>
             <View
                 android:layout_width="match_parent"
@@ -36,9 +37,11 @@
                 android:background="#88cccccc">
             </View>
             <android.support.v7.widget.RecyclerView
+                android:id="@+id/pic_rv"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="1">
+                android:layout_weight="1"
+                >
 
             </android.support.v7.widget.RecyclerView  >
         </LinearLayout>
@@ -46,12 +49,33 @@
             android:layout_width="1dp"
             android:layout_height="match_parent"
             android:background="#88cccccc"></View>
-        <ListView
-            android:id="@+id/check_lv"
+        <RelativeLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/check_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="检查项目"
+                android:background="#e8a94f"
+                android:padding="8dp"/>
+            <ListView
+                android:id="@+id/check_lv"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/check_tv"
+                android:padding="5dp"
+                >
+            </ListView>
+            <TextView
+                android:id="@+id/nocheck_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="没有相关的检查"/>
+        </RelativeLayout>
 
-        </ListView>
     </LinearLayout>
 </RelativeLayout>

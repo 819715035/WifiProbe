@@ -33,6 +33,7 @@
     -->
     <list>
         <mapping class="cndoppler.cn.wifiprobe.bean.Patient"></mapping>
+        <mapping class="cndoppler.cn.wifiprobe.bean.CheckProgrem"></mapping>
         <!--     <mapping class="com.litepaltest.model.Classroom" />
               <mapping class="com.litepaltest.model.Teacher" />
               <mapping class="com.litepaltest.model.IdCard" />
@@ -45,20 +46,5 @@
               <mapping class="com.litepaltest.model.WeChatMessage" />
               <mapping class="com.litepaltest.model.WeiboMessage" /> -->
     </list>
-
-    <!--
-    	Define the cases of the tables and columns name. Java is a
-    	case sensitive language, while database is case insensitive.
-    	LitePal will turn all classes names and fields names into lowercase
-    	by default while creating or upgrading database. Developers can change
-    	this behavior into the styles their like. "keep" will keep the
-    	cases of classes and fields. "upper" will turn all classes names
-    	and fields names into uppercase. "lower" will act as default.
-    	Do not change the value after you run your app for the first time,
-    	or it might cause the exception that column can not be found.
-    	value options: keep lower upper
-    	For example:    
-    	<cases value="lower" ></cases>
-    -->
 
 </litepal>

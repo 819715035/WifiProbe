@@ -1,9 +1,13 @@
 package cndoppler.cn.wifiprobe.activity;
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -11,26 +15,25 @@ import android.widget.TextView;
 
 import org.litepal.crud.DataSupport;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import cndoppler.cn.wifiprobe.R;
 import cndoppler.cn.wifiprobe.adapter.PatientAdapter;
+import cndoppler.cn.wifiprobe.adapter.SearchTextviewAdapter;
 import cndoppler.cn.wifiprobe.bean.Patient;
 import cndoppler.cn.wifiprobe.utils.BaseActivity;
-import cndoppler.cn.wifiprobe.utils.LogUtils;
-
 public class RecordListActivity extends BaseActivity {
 
     private Button addRecordBtn;
     private ListView patientLv;
-    private List<Patient> patients;
+    private ArrayList<Patient> patients;
     private PatientAdapter adapter;
     private TextView noRecordTv;
     private ImageView backIv;
-    public static final int UPDATE_REQUEST_CODE = 2;
-    public static final int UPDATA_RESULT_CODE = 3;
     public static final int ADD_PATIENT_CODE = 0;
     public static final int ADD_PATIENT_RESULT_CODE = 1;
+    private AutoCompleteTextView searchAt;
 
     @Override
     public void setContent() {
@@ -40,25 +43,15 @@ public class RecordListActivity extends BaseActivity {
     @Override
     public void initWidget() {
         addRecordBtn = findViewById(R.id.add_record_btn);
-        addRecordBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(RecordListActivity.this,AddRecordActivity.class);
-                startActivityForResult(intent,ADD_PATIENT_CODE);
-            }
-        });
         patientLv = findViewById(R.id.patient_lv);
-        patientLv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("patient",patients.get(i));
-                openActivity(ReadRecordctivity.class,bundle);
-            }
-        });
         noRecordTv = findViewById(R.id.norecord_tv);
         backIv = findViewById(R.id.back_iv);
+        searchAt = findViewById(R.id.search_record_at);
+        setlistener();
+    }
+
+    private void setlistener()
+    {
         backIv.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -67,6 +60,40 @@ public class RecordListActivity extends BaseActivity {
                 finish();
             }
         });
+        patientLv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                startReadPatientActivity(patients.get(i));
+            }
+        });
+        addRecordBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(RecordListActivity.this,AddRecordActivity.class);
+                startActivityForResult(intent,ADD_PATIENT_CODE);
+            }
+        });
+        searchAt.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l)
+            {
+                startReadPatientActivity((Patient) adapterView.getItemAtPosition((int) l));
+                searchAt.setText("");
+            }
+        });
+    }
+
+    /**
+     * 跳转到查看病人界面
+     * @param patient
+     */
+    private void startReadPatientActivity(Patient patient)
+    {
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("patient",patient);
+        openActivity(ReadRecordctivity.class,bundle);
     }
 
     @Override
@@ -74,6 +101,7 @@ public class RecordListActivity extends BaseActivity {
         getPatientData();
         if (patients!=null && patients.size()>0){
             setListviewData();
+            searchAt.setAdapter(new SearchTextviewAdapter(patients,RecordListActivity.this));
         }
     }
 
@@ -81,20 +109,40 @@ public class RecordListActivity extends BaseActivity {
      * 删除病人信息
      * @param patient
      */
-    private void delectPatientData(Patient patient) {
-        DataSupport.delete(Patient.class,patient.getId());
-        patients.remove(patient);
-        adapter.notifyDataSetChanged();
-        if (patients!=null && patients.size()<=0){
-            noRecordTv.setVisibility(View.VISIBLE);
-        }
+    private void delectPatientData(final Patient patient) {
+
+        new AlertDialog.Builder(this)
+                .setTitle("温馨提示")
+                .setMessage("您确定要删除病人及其图片吗？")
+                .setPositiveButton("确定", new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i)
+                    {
+                        DataSupport.delete(Patient.class,patient.getId());
+                        patients.remove(patient);
+                        adapter.notifyDataSetChanged();
+                        if (patients!=null && patients.size()<=0){
+                            noRecordTv.setVisibility(View.VISIBLE);
+                        }
+                    }
+                })
+                .setNegativeButton("取消", new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i)
+                    {
+
+                    }
+                })
+                .create().show();
     }
 
     /**
      * 获取到本地数据库病人的信息
      */
     public void getPatientData(){
-        patients = DataSupport.findAll(Patient.class);
+        patients = (ArrayList<Patient>) DataSupport.findAll(Patient.class,true);
     }
 
     @Override
@@ -112,15 +160,6 @@ public class RecordListActivity extends BaseActivity {
                 adapter.notifyDataSetChanged();
                 patientLv.setSelection(patients.size()-1);
             }
-        }else if (resultCode == UPDATA_RESULT_CODE){
-            Patient patient = (Patient) data.getSerializableExtra("patient");
-            int position = data.getIntExtra("position",0);
-            patients.remove(position);
-            patients.add(position,patient);
-            for (int i = 0;i<patients.size();i++){
-                LogUtils.d(patients.get(i).toString());
-            }
-            adapter.notifyDataSetChanged();
         }
     }
 
@@ -133,25 +172,8 @@ public class RecordListActivity extends BaseActivity {
             public void onDelectListener(Patient patient) {
                 delectPatientData(patient);
             }
-
-            @Override
-            public void onUpdateListener(Patient patient,int position) {
-                updatePatient(patient,position);
-            }
         });
         patientLv.setAdapter(adapter);
         noRecordTv.setVisibility(View.GONE);
-    }
-
-    /**
-     * 更新病员数据
-     * @param patient
-     */
-    private void updatePatient(Patient patient,int position) {
-        Intent intent = new Intent(RecordListActivity.this,UpdateRecordActivity.class);
-        intent.putExtra("patient",patient);
-        intent.putExtra("position",position);
-        LogUtils.e(patient.toString());
-        startActivityForResult(intent,UPDATE_REQUEST_CODE);
     }
 }

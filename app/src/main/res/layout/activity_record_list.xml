@@ -34,12 +34,13 @@
             android:layout_height="wrap_content"
             android:src="@drawable/icon_pre_activity"
             android:padding="5dp"/>
-        <EditText
-            android:id="@+id/search_record_et"
+        <AutoCompleteTextView
+            android:id="@+id/search_record_at"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             tools:text="请输入病原信息"
             android:drawableLeft="@drawable/icon_search"
+            android:completionThreshold="1"
             android:drawablePadding="5dp"
             android:layout_weight="1"/>
         <Button

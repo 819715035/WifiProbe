@@ -16,6 +16,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import cndoppler.cn.wifiprobe.R;
+import cndoppler.cn.wifiprobe.bean.CheckProgrem;
 import cndoppler.cn.wifiprobe.bean.Patient;
 import cndoppler.cn.wifiprobe.utils.BaseActivity;
 import cndoppler.cn.wifiprobe.utils.DateUtils;
@@ -54,7 +55,7 @@ public class AddRecordActivity extends BaseActivity {
         sexRg = findViewById(R.id.sex_rg);
         birthdayTv = findViewById(R.id.birthday_tv);
         birthdayDp = findViewById(R.id.birthday_dp);
-        setListener();
+
     }
 
     @Override
@@ -68,6 +69,7 @@ public class AddRecordActivity extends BaseActivity {
         year = c.get(Calendar.YEAR);
         month = c.get(Calendar.MONTH); 
         day = c.get(Calendar.DAY_OF_MONTH);
+        setListener();
     }
 
     private void setListener() {

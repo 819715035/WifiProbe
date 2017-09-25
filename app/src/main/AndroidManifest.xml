@@ -23,7 +23,6 @@
         </activity>
         <activity android:name=".activity.RecordListActivity" />
         <activity android:name=".activity.AddRecordActivity" />
-        <activity android:name=".activity.UpdateRecordActivity" />
         <activity android:name=".activity.ReadRecordctivity"></activity>
     </application>
 
