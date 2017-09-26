@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="cndoppler.cn.wifiprobe">
+          package="cndoppler.cn.wifiprobe">
 
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
     <application
         android:name=".utils.BaseApplication"
@@ -16,14 +16,16 @@
         android:theme="@android:style/Theme.Light.NoTitleBar">
         <activity android:name=".activity.MainActivity">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.MAIN"/>
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".activity.RecordListActivity" />
-        <activity android:name=".activity.AddRecordActivity" />
-        <activity android:name=".activity.ReadRecordctivity"></activity>
+        <activity android:name=".activity.RecordListActivity"/>
+        <activity android:name=".activity.AddRecordActivity"/>
+        <activity android:name=".activity.ReadRecordctivity"/>
+        <activity android:name=".activity.ReadPicActivity">
+        </activity>
     </application>
 
 </manifest>

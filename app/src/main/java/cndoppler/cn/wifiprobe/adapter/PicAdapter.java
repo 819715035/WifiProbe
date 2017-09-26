@@ -1,12 +1,22 @@
 package cndoppler.cn.wifiprobe.adapter;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import java.util.ArrayList;
+
 import cndoppler.cn.wifiprobe.R;
+import cndoppler.cn.wifiprobe.activity.ReadPicActivity;
+import cndoppler.cn.wifiprobe.bean.CheckProgrem;
+import cndoppler.cn.wifiprobe.bean.PicData;
+import cndoppler.cn.wifiprobe.utils.BaseActivity;
+import cndoppler.cn.wifiprobe.utils.ToastUtils;
 
 /**
  * Created by admin on 2017/9/25.
@@ -15,9 +25,11 @@ import cndoppler.cn.wifiprobe.R;
 public class PicAdapter extends RecyclerView.Adapter<PicAdapter.MyViewHolder>
 {
     private Context context;
+    private ArrayList<PicData> picDatas;
 
-    public PicAdapter(Context context)
+    public PicAdapter(Context context,CheckProgrem checkProgrem)
     {
+        this.picDatas = checkProgrem.getPic();
         this.context = context;
     }
 
@@ -31,13 +43,24 @@ public class PicAdapter extends RecyclerView.Adapter<PicAdapter.MyViewHolder>
     @Override
     public void onBindViewHolder(PicAdapter.MyViewHolder holder, int position)
     {
-        holder.iv.setImageResource(R.drawable.icon_search);
+        final PicData pic = picDatas.get(position);
+        holder.iv.setImageResource(pic.getPath());
+        holder.iv.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                Intent intent = new Intent(context,ReadPicActivity.class);
+                intent.putExtra("picdata",picDatas);
+                context.startActivity(intent);
+            }
+        });
     }
 
     @Override
     public int getItemCount()
     {
-        return 5;
+        return picDatas.size();
     }
 
     class MyViewHolder extends RecyclerView.ViewHolder{

@@ -36,14 +36,27 @@
                 android:layout_height="1dp"
                 android:background="#88cccccc">
             </View>
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/pic_rv"
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="1"
-                >
+                android:layout_weight="1">
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/pic_rv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    >
+                </android.support.v7.widget.RecyclerView  >
+                <TextView
+                    android:id="@+id/nopic_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="没有相关图片"
+                    android:layout_centerInParent="true"
+                    >
+                </TextView  >
+            </RelativeLayout>
 
-            </android.support.v7.widget.RecyclerView  >
         </LinearLayout>
         <View
             android:layout_width="1dp"

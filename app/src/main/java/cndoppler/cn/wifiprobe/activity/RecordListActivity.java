@@ -1,6 +1,5 @@
 package cndoppler.cn.wifiprobe.activity;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -16,7 +15,6 @@ import android.widget.TextView;
 import org.litepal.crud.DataSupport;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import cndoppler.cn.wifiprobe.R;
 import cndoppler.cn.wifiprobe.adapter.PatientAdapter;

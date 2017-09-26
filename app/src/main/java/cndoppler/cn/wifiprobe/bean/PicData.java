@@ -3,18 +3,16 @@ package cndoppler.cn.wifiprobe.bean;
 import org.litepal.crud.DataSupport;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 
 /**
- * Created by admin on 2017/9/25.
+ * Created by admin on 2017/9/26.
  */
 
-public class CheckProgrem extends DataSupport implements Serializable
+public class PicData extends DataSupport implements Serializable
 {
     private long id;
-    private String body;
+    private int path;
     private long date;
-    private ArrayList<PicData> pic = new ArrayList<>();
 
     public long getId()
     {
@@ -26,14 +24,14 @@ public class CheckProgrem extends DataSupport implements Serializable
         this.id = id;
     }
 
-    public String getBody()
+    public int getPath()
     {
-        return body;
+        return path;
     }
 
-    public void setBody(String body)
+    public void setPath(int path)
     {
-        this.body = body;
+        this.path = path;
     }
 
     public long getDate()
@@ -46,22 +44,12 @@ public class CheckProgrem extends DataSupport implements Serializable
         this.date = date;
     }
 
-    public ArrayList<PicData> getPic()
-    {
-        return pic;
-    }
-
-    public void setPic(ArrayList<PicData> pic)
-    {
-        this.pic = pic;
-    }
-
     @Override
     public String toString()
     {
-        return "CheckProgrem{" +
+        return "PicData{" +
                 "id=" + id +
-                ", body='" + body + '\'' +
+                ", path=" + path +
                 ", date=" + date +
                 '}';
     }

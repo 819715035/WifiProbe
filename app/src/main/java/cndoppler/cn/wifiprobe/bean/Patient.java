@@ -20,7 +20,7 @@ public class Patient extends DataSupport implements Serializable{
     private int age;
     private String number;
     private long date;
-    private ArrayList<CheckProgrem> checkProgrems;
+    private ArrayList<CheckProgrem> checkProgrems = new ArrayList<>();
 
     public long getId()
     {
@@ -105,21 +105,14 @@ public class Patient extends DataSupport implements Serializable{
     @Override
     public String toString()
     {
-        StringBuffer s = new StringBuffer();
-        if (checkProgrems!=null){
-            for (int i=0;i<checkProgrems.size();i++){
-                s.append(checkProgrems.get(i).getBody());
-            }
-        }
         String chineseSex = sex==0?"男":(sex ==1?"女":"未知");
-        return  "  编号：" + number +
+        return  "  id：" + id +
+                "  编号：" + number +
                 "  姓名：" + name +
                 "  sex：" + chineseSex +
                 "  出生日期：" + DateUtils.formatDatetime(new Date(birthday)) +
                 "  年龄：" + age  +
-                "  建表时间："+DateUtils.formatDatetime(new Date(date))+
-                "  检查部位："+s
-
+                "  建表时间："+DateUtils.formatDatetime(new Date(date))
                 ;
     }
 }

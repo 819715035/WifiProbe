@@ -6,10 +6,12 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import java.util.Date;
 import java.util.List;
 
 import cndoppler.cn.wifiprobe.R;
 import cndoppler.cn.wifiprobe.bean.CheckProgrem;
+import cndoppler.cn.wifiprobe.utils.DateUtils;
 
 /**
  * Created by admin on 2017/9/25.
@@ -19,6 +21,12 @@ public class CheckProgremAdapter extends BaseAdapter
 {
     private Context context;
     private List<CheckProgrem> checkProgrems;
+
+    public CheckProgremAdapter(Context context, List<CheckProgrem> checkProgrems)
+    {
+        this.context = context;
+        this.checkProgrems = checkProgrems;
+    }
 
     @Override
     public int getCount()
@@ -52,9 +60,10 @@ public class CheckProgremAdapter extends BaseAdapter
         }else {
             holder = (Holder) converview.getTag();
         }
-        holder.positionTv.setText(position+"、");
-        holder.bodyTv.setText("");
-        holder.dateTv.setText("");
+        CheckProgrem cp = checkProgrems.get(position);
+        holder.positionTv.setText(position+1+"、");
+        holder.bodyTv.setText(cp.getBody());
+        holder.dateTv.setText(DateUtils.formatDatetime(new Date(cp.getDate())));
         return converview;
     }
 

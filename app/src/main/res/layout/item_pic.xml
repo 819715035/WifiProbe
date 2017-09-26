@@ -7,4 +7,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:src="@drawable/icon_search"/>
+    <View
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:background="#88cccccc"></View>
 </LinearLayout>
