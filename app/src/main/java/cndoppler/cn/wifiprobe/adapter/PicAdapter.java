@@ -1,9 +1,7 @@
 package cndoppler.cn.wifiprobe.adapter;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,8 +13,6 @@ import cndoppler.cn.wifiprobe.R;
 import cndoppler.cn.wifiprobe.activity.ReadPicActivity;
 import cndoppler.cn.wifiprobe.bean.CheckProgrem;
 import cndoppler.cn.wifiprobe.bean.PicData;
-import cndoppler.cn.wifiprobe.utils.BaseActivity;
-import cndoppler.cn.wifiprobe.utils.ToastUtils;
 
 /**
  * Created by admin on 2017/9/25.
@@ -41,7 +37,7 @@ public class PicAdapter extends RecyclerView.Adapter<PicAdapter.MyViewHolder>
     }
 
     @Override
-    public void onBindViewHolder(PicAdapter.MyViewHolder holder, int position)
+    public void onBindViewHolder(PicAdapter.MyViewHolder holder, final int position)
     {
         final PicData pic = picDatas.get(position);
         holder.iv.setImageResource(pic.getPath());
@@ -51,6 +47,7 @@ public class PicAdapter extends RecyclerView.Adapter<PicAdapter.MyViewHolder>
             public void onClick(View view)
             {
                 Intent intent = new Intent(context,ReadPicActivity.class);
+                intent.putExtra("position",position);
                 intent.putExtra("picdata",picDatas);
                 context.startActivity(intent);
             }

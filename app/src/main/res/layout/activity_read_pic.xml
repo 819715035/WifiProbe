@@ -6,8 +6,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="cndoppler.cn.wifiprobe.activity.ReadPicActivity">
-    <ImageView
-        android:id="@+id/pic_iv"
+    <android.support.v4.view.ViewPager
+        android:id="@+id/pic_vp"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:layout_margin="5dp">
+
+    </android.support.v4.view.ViewPager>
 </RelativeLayout>

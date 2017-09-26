@@ -1,18 +1,21 @@
 package cndoppler.cn.wifiprobe.activity;
 
+import android.support.v4.view.ViewPager;
 import android.widget.ImageView;
 
 import java.util.ArrayList;
 
 import cndoppler.cn.wifiprobe.R;
 import cndoppler.cn.wifiprobe.adapter.PicAdapter;
+import cndoppler.cn.wifiprobe.adapter.PicViewPagerAdapter;
 import cndoppler.cn.wifiprobe.bean.PicData;
 import cndoppler.cn.wifiprobe.utils.BaseActivity;
 
 public class ReadPicActivity extends BaseActivity
 {
 private ArrayList<PicData> picdatas;
-    private ImageView picIv;
+    private ViewPager picVp;
+    private int position;
     @Override
     public void setContent()
     {
@@ -22,15 +25,17 @@ private ArrayList<PicData> picdatas;
     @Override
     public void initWidget()
     {
-        picIv = findViewById(R.id.pic_iv);
+        picVp = findViewById(R.id.pic_vp);
     }
 
     @Override
     public void initData()
     {
         picdatas = (ArrayList<PicData>) getIntent().getSerializableExtra("picdata");
+        position = getIntent().getIntExtra("position",0);
         if (picdatas!=null && picdatas.size()>0){
-            picIv.setImageResource(picdatas.get(0).getPath());
+            picVp.setAdapter(new PicViewPagerAdapter(this,picdatas));
+            picVp.setCurrentItem(position);
         }
     }
 
