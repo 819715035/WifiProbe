@@ -1,6 +1,7 @@
 package cndoppler.cn.wifiprobe.adapter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -21,6 +22,7 @@ public class CheckProgremAdapter extends BaseAdapter
 {
     private Context context;
     private List<CheckProgrem> checkProgrems;
+    private int selectPosition;
 
     public CheckProgremAdapter(Context context, List<CheckProgrem> checkProgrems)
     {
@@ -60,11 +62,25 @@ public class CheckProgremAdapter extends BaseAdapter
         }else {
             holder = (Holder) converview.getTag();
         }
+        if (getSelectPosition() ==position){
+            converview.setBackgroundColor(Color.parseColor("#e8a94f"));
+        }else{
+            converview.setBackgroundColor(Color.parseColor("#ffffff"));
+        }
         CheckProgrem cp = checkProgrems.get(position);
         holder.positionTv.setText(position+1+"、");
         holder.bodyTv.setText(cp.getBody());
         holder.dateTv.setText(DateUtils.formatDatetime(new Date(cp.getDate())));
         return converview;
+    }
+
+    public void setSelectPosition(int position){
+        selectPosition = position;
+        notifyDataSetChanged();
+    }
+
+    public int getSelectPosition(){
+        return selectPosition;
     }
 
     class Holder{

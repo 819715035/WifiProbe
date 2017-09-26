@@ -28,6 +28,7 @@ public class ReadRecordctivity extends BaseActivity {
     private Patient patient;
     private TextView nopicTv;
     private CheckProgrem picdatas;
+    private CheckProgremAdapter checkProgremAdapter;
 
     @Override
     public void setContent() {
@@ -63,6 +64,8 @@ public class ReadRecordctivity extends BaseActivity {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l)
             {
                 setPicdataAdapter((int) l);
+                //设置点击listview变背景颜色
+                checkProgremAdapter.setSelectPosition(i);
             }
         });
     }
@@ -102,7 +105,8 @@ public class ReadRecordctivity extends BaseActivity {
     private void getCheckProgrem()
     {
         if(patient.getCheckProgrems()!=null&&patient.getCheckProgrems().size()>0){
-            check_lv.setAdapter(new CheckProgremAdapter(this,patient.getCheckProgrems()));
+           checkProgremAdapter = new CheckProgremAdapter(this,patient.getCheckProgrems());
+            check_lv.setAdapter(checkProgremAdapter);
             setPicdataAdapter(0);
             nocheck_tv.setVisibility(View.GONE);
         }else{
