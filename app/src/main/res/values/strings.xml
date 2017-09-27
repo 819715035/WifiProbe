@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">WifiProble</string>
+    <string name="scan_btn">SCAN</string>
+    <string name="live">LIVE</string>
+    <string name="fit_width">FIT WIDTH</string>
+    <string name="fit_height">FIT HEIGHT</string>
+    <string name="freeze">Freeze</string>
 </resources>

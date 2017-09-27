@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="cndoppler.cn.wifiprobe">
 
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
@@ -24,8 +26,8 @@
         <activity android:name=".activity.RecordListActivity"/>
         <activity android:name=".activity.AddRecordActivity"/>
         <activity android:name=".activity.ReadRecordctivity"/>
-        <activity android:name=".activity.ReadPicActivity">
-        </activity>
+        <activity android:name=".activity.ReadPicActivity"/>
+        <activity android:name=".activity.ScanActivity"/>
     </application>
 
 </manifest>
