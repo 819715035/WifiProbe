@@ -1,10 +1,6 @@
 package cndoppler.cn.wifiprobe.activity;
 
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.ColorMatrix;
-import android.graphics.ColorMatrixColorFilter;
-import android.graphics.Paint;
 import android.view.View;
 import android.widget.Button;
 import android.widget.NumberPicker;
@@ -12,7 +8,6 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import java.util.Date;
-import java.util.logging.Logger;
 
 import cndoppler.cn.wifiprobe.R;
 import cndoppler.cn.wifiprobe.bean.CheckProgrem;
@@ -20,7 +15,6 @@ import cndoppler.cn.wifiprobe.bean.Patient;
 import cndoppler.cn.wifiprobe.bean.PicData;
 import cndoppler.cn.wifiprobe.utils.BaseActivity;
 import cndoppler.cn.wifiprobe.utils.BitmapUtils;
-import cndoppler.cn.wifiprobe.utils.DateUtils;
 import cndoppler.cn.wifiprobe.utils.LogUtils;
 import cndoppler.cn.wifiprobe.utils.SDCUtils;
 import cndoppler.cn.wifiprobe.utils.ToastUtils;
@@ -54,6 +48,7 @@ public class ScanActivity extends BaseActivity implements Probe.ScanListener,Pro
     private TextView mWedthTv,mPowerTv,mDepthTv,mGainTv,mDrTv,mGrayMapTv,mPersistenceTv,mEnhancelevelTv,mTgc1tV,mTgc2Tv,mTgc3Tv,mTgc4Tv,mColorGainTv,mColorPersistenceTv
             ,mColorPrfTv,mColorThresholTv,mEnumColorWallTv,mColorAngleTv,mFrameRateTv,mFreqTv;
     private SeekBar mDepthSb,mColorGainSb,mColorPersistenceSb,mColorPrfSb,mColorThresholdSb,mEnumColorWallSb,mColorAngleSb;
+    private Button saveimgBtn;
     private Patient patient;
     private CheckProgrem cp;
 
@@ -86,6 +81,8 @@ public class ScanActivity extends BaseActivity implements Probe.ScanListener,Pro
         mTestOverHeated.setOnClickListener(this);
         mTestBatteryLow = mFindViewById(R.id.test_battery_low);
         mTestBatteryLow.setOnClickListener(this);
+        saveimgBtn = findViewById(R.id.saveimg_btn);
+        saveimgBtn.setOnClickListener(this);
         mWedthTv = mFindViewById(R.id.wedth_tv);
         mWedthTv.setText("温度："+probe.getTemperature()+" °");
         mPowerTv = mFindViewById(R.id.power_tv);
@@ -646,15 +643,6 @@ public class ScanActivity extends BaseActivity implements Probe.ScanListener,Pro
                 {
                     //停止扫描
                     probe.stopScan();
-                    Bitmap currentBitmap = BitmapUtils.convertViewToBitmap(mImageView);
-                    if (BitmapUtils.getBitmapSize(currentBitmap) < SDCUtils.getSDFreeSize())
-                    {
-                        String path = BitmapUtils.saveBitmapInExternalStorage(BitmapUtils.convertViewToBitmap(mImageView), this);
-                        savePatientInfo(path);
-                    }else {
-                        ToastUtils.showToastLong(this,"内存不足，请删除文件后再保存");
-                    }
-
                 }else {
                     //开始扫描
                     probe.startScan();
@@ -697,6 +685,17 @@ public class ScanActivity extends BaseActivity implements Probe.ScanListener,Pro
                 mSeekBarTgc2.setProgress(probe.getTgc2());
                 mSeekBarTgc3.setProgress(probe.getTgc3());
                 mSeekBarTgc4.setProgress(probe.getTgc4());
+                break;
+            case R.id.saveimg_btn:
+                //重置所有tgc
+                Bitmap currentBitmap = BitmapUtils.convertViewToBitmap(mImageView);
+                if (BitmapUtils.getBitmapSize(currentBitmap) < SDCUtils.getSDFreeSize())
+                {
+                    String path = BitmapUtils.saveBitmapInExternalStorage(BitmapUtils.convertViewToBitmap(mImageView), this);
+                    savePatientInfo(path);
+                }else {
+                    ToastUtils.showToastLong(this,"内存不足，请删除文件后再保存");
+                }
                 break;
         }
     }

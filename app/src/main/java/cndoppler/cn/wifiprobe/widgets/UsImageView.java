@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.DashPathEffect;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
@@ -94,6 +95,9 @@ public class UsImageView extends AppCompatImageView {
     private float roiEndR;
     private float roiDepth;
     private final float roiDepthMinLimit = 200;
+    private float scale = 1;
+    private float tx;
+    private float ty;
 
     public UsImageView(Context context) {
         super(context);
@@ -125,7 +129,7 @@ public class UsImageView extends AppCompatImageView {
         paint.setColor(Color.GREEN);
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth(5);
-
+        paint.setTextSize(30);
         Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(),
                 R.drawable.gray_circle);
         //设置四个圆点
@@ -243,29 +247,34 @@ public class UsImageView extends AppCompatImageView {
                 if (mode == MOVE) {
                     zoomMatrix.set(savedZoomMatrix);
 
-                    float tx = event.getX() - startPoint.x;
-                    float ty = event.getY() - startPoint.y;
+                    tx = event.getX() - startPoint.x;
+                    ty = event.getY() - startPoint.y;
 
                     zoomMatrix.getValues(values);
 
                     ty = checkTyBound(values, ty);
                     tx = checkTxBound(values, tx);
+                    //平移
                     zoomMatrix.postTranslate(tx, ty);
+                    drawCenterLine(canvas);
                 } else if (mode == ZOOM) {
                     float newDist = distance(event);
                     if (newDist > 10f) {
-                        float scale = newDist / oriDist;
+                        scale = newDist / oriDist;
                         zoomMatrix.set(savedZoomMatrix);
 
                         zoomMatrix.getValues(values);
+                        //缩放倍数
                         scale = checkFitScale(scale, values);
                         zoomMatrix.postScale(scale, scale, midPoint.x, midPoint.y);
+                        drawDepthLine(canvas);
                     }
                 }
                 break;
         }
 
         setImageMatrix(zoomMatrix);
+        postInvalidate();
     }
 
     @Override
@@ -387,6 +396,27 @@ public class UsImageView extends AppCompatImageView {
         super.onDraw(canvas);
         if (probe.getMode() == Probe.EnumMode.MODE_C) {
             drawOutline(canvas);
+        }
+
+    }
+
+    //画中心线
+    private void drawCenterLine(Canvas canvas)
+    {
+        int heightSpace = getHeight()/10;
+        for (int i=0;i<=10;i++){
+            canvas.drawPoint(getWidth()/2-tx,heightSpace*(i+1)*scale-ty,paint);
+        }
+    }
+
+    //画深度线
+    private void drawDepthLine(Canvas canvas)
+    {
+        int heightSpace = getHeight()/10;
+        canvas.drawLine(10,-ty,10,heightSpace*10*scale-ty,paint);
+        for (int i=0;i<=10;i++){
+            canvas.drawLine(10,heightSpace*i*scale-ty,20,heightSpace*i*scale-ty,paint);
+            canvas.drawText(i*0.5f+"cm",15,heightSpace*i*scale-ty+15,paint);
         }
     }
 
@@ -1040,4 +1070,5 @@ public class UsImageView extends AppCompatImageView {
     private static float atanF(float a) {
         return (float) Math.atan(a);
     }
+
 }

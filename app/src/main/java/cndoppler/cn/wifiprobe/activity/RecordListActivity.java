@@ -14,13 +14,18 @@ import android.widget.TextView;
 
 import org.litepal.crud.DataSupport;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import cndoppler.cn.wifiprobe.R;
 import cndoppler.cn.wifiprobe.adapter.PatientAdapter;
 import cndoppler.cn.wifiprobe.adapter.SearchTextviewAdapter;
+import cndoppler.cn.wifiprobe.bean.CheckProgrem;
 import cndoppler.cn.wifiprobe.bean.Patient;
+import cndoppler.cn.wifiprobe.bean.PicData;
 import cndoppler.cn.wifiprobe.utils.BaseActivity;
+import cndoppler.cn.wifiprobe.utils.LogUtils;
+
 public class RecordListActivity extends BaseActivity {
 
     private Button addRecordBtn;
@@ -115,14 +120,9 @@ public class RecordListActivity extends BaseActivity {
                 .setPositiveButton("确定", new DialogInterface.OnClickListener()
                 {
                     @Override
-                    public void onClick(DialogInterface dialogInterface, int i)
+                    public void onClick(DialogInterface dialogInterface, int position)
                     {
-                        DataSupport.delete(Patient.class,patient.getId());
-                        patients.remove(patient);
-                        adapter.notifyDataSetChanged();
-                        if (patients!=null && patients.size()<=0){
-                            noRecordTv.setVisibility(View.VISIBLE);
-                        }
+                        delectPatient(patient);
                     }
                 })
                 .setNegativeButton("取消", new DialogInterface.OnClickListener()
@@ -134,6 +134,33 @@ public class RecordListActivity extends BaseActivity {
                     }
                 })
                 .create().show();
+    }
+
+    /**
+     * 删除病人信息
+     * @param patient
+     */
+    private void delectPatient(Patient patient)
+    {
+        Patient p = DataSupport.find(Patient.class,patient.getId(),true);
+        for (int i=0;i<p.getCheckProgrems().size();i++){
+            //得到检查项目
+            CheckProgrem checkProgrem = DataSupport.find(CheckProgrem.class,p.getCheckProgrems().get(i).getId(),true);
+            for (int j=0;j<checkProgrem.getPic().size();j++){
+                String path = checkProgrem.getPic().get(j).getPath();
+                LogUtils.d("图片路径"+path);
+                File file = new File(path);
+                if (file.exists()){
+                    file.delete();
+                }
+            }
+        }
+        DataSupport.delete(Patient.class,p.getId());
+        patients.remove(patient);
+        adapter.notifyDataSetChanged();
+        if (patients!=null && patients.size()<=0){
+            noRecordTv.setVisibility(View.VISIBLE);
+        }
     }
 
     /**
