@@ -145,24 +145,6 @@ public class AddRecordActivity extends BaseActivity {
      * 添加病人信息
      */
     private void addPatientInfo() {
-        PicData pic = new PicData();
-        pic.setPath(R.drawable.icon_head);
-        pic.setDate(new Date().getTime());
-        pic.save();
-        PicData pic1 = new PicData();
-        pic1.setPath(R.drawable.icon_search);
-        pic1.setDate(new Date().getTime());
-        pic1.save();
-        CheckProgrem cp = new CheckProgrem();
-        cp.setBody("血管");
-        cp.setDate(new Date().getTime());
-        cp.getPic().add(pic);
-        cp.save();
-        CheckProgrem cp1 = new CheckProgrem();
-        cp1.setBody("周围神经");
-        cp1.setDate(new Date().getTime());
-        cp1.getPic().add(pic1);
-        cp1.save();
 
         Patient patient = new Patient();
         patient.setNumber(patientNum);
@@ -171,8 +153,6 @@ public class AddRecordActivity extends BaseActivity {
         patient.setBirthday(getBirthday());
         patient.setAge(new Date().getYear()-year+1900);
         patient.setDate(new Date().getTime());
-        patient.getCheckProgrems().add(cp);
-        patient.getCheckProgrems().add(cp1);
         if (patient.save()){
             ToastUtils.showToastShort(this,"保存成功");
             Intent intent = new Intent();

@@ -11,8 +11,18 @@ import android.widget.NumberPicker;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import java.util.Date;
+import java.util.logging.Logger;
+
 import cndoppler.cn.wifiprobe.R;
+import cndoppler.cn.wifiprobe.bean.CheckProgrem;
+import cndoppler.cn.wifiprobe.bean.Patient;
+import cndoppler.cn.wifiprobe.bean.PicData;
 import cndoppler.cn.wifiprobe.utils.BaseActivity;
+import cndoppler.cn.wifiprobe.utils.BitmapUtils;
+import cndoppler.cn.wifiprobe.utils.DateUtils;
+import cndoppler.cn.wifiprobe.utils.LogUtils;
+import cndoppler.cn.wifiprobe.utils.SDCUtils;
 import cndoppler.cn.wifiprobe.utils.ToastUtils;
 import cndoppler.cn.wifiprobe.widgets.UsImageView;
 import leltek.viewer.model.Probe;
@@ -44,6 +54,8 @@ public class ScanActivity extends BaseActivity implements Probe.ScanListener,Pro
     private TextView mWedthTv,mPowerTv,mDepthTv,mGainTv,mDrTv,mGrayMapTv,mPersistenceTv,mEnhancelevelTv,mTgc1tV,mTgc2Tv,mTgc3Tv,mTgc4Tv,mColorGainTv,mColorPersistenceTv
             ,mColorPrfTv,mColorThresholTv,mEnumColorWallTv,mColorAngleTv,mFrameRateTv,mFreqTv;
     private SeekBar mDepthSb,mColorGainSb,mColorPersistenceSb,mColorPrfSb,mColorThresholdSb,mEnumColorWallSb,mColorAngleSb;
+    private Patient patient;
+    private CheckProgrem cp;
 
     @Override
     public void setContent() {
@@ -564,37 +576,16 @@ public class ScanActivity extends BaseActivity implements Probe.ScanListener,Pro
     @Override
     public void onNewFrameReady(Probe.Frame frame, Bitmap bitmap) {
         if (frame.mode == probe.getMode()) {
-            mImageView.setImageBitmap(getGrayBitmap(bitmap));
+            mImageView.setImageBitmap(bitmap);
         }
         Probe.CModeFrameData cModeFrameData = frame.cModeFrameData;
         if (cModeFrameData != null) {
             mImageView.setParams(cModeFrameData.originXPx, cModeFrameData.originYPx,
                     cModeFrameData.rPx);
         }
+        LogUtils.d(bitmap.getWidth()+"==========="+bitmap.getHeight());
     }
-    //图片灰化处理
-    public Bitmap getGrayBitmap(Bitmap bitmap) {
-        Bitmap mGrayBitmap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
-        Canvas mCanvas = new Canvas(mGrayBitmap);
-        Paint mPaint = new Paint();
 
-        //创建颜色变换矩阵
-        float[] array = {1.438f, -0.062f, -0.062f, 0, 0,
-                -0.122f, 1.378f, -0.122f, 0, 0,
-                -0.016f, -0.016f, 1.483f, 0, 0,
-                -0.03f, 0.05f, -0.02f, 1, 0};
-        ColorMatrix colorMatrix = new ColorMatrix(array);
-        mPaint.setColorFilter(new ColorMatrixColorFilter(colorMatrix));
-        //设置灰度影响范围
-        colorMatrix.setSaturation(0);
-        //创建颜色过滤矩阵
-        ColorMatrixColorFilter mColorFilter = new ColorMatrixColorFilter(colorMatrix);
-        //设置画笔的颜色过滤矩阵
-        mPaint.setColorFilter(mColorFilter);
-        //使用处理后的画笔绘制图像
-        mCanvas.drawBitmap(bitmap, 0, 0, mPaint);
-        return mGrayBitmap;
-    }
     /**
      * 設定depth成功
      *
@@ -652,9 +643,19 @@ public class ScanActivity extends BaseActivity implements Probe.ScanListener,Pro
             case R.id.toogle_scan:
                 //冻结或激活扫描
                 if (probe.isLive())
+                {
                     //停止扫描
                     probe.stopScan();
-                else {
+                    Bitmap currentBitmap = BitmapUtils.convertViewToBitmap(mImageView);
+                    if (BitmapUtils.getBitmapSize(currentBitmap) < SDCUtils.getSDFreeSize())
+                    {
+                        String path = BitmapUtils.saveBitmapInExternalStorage(BitmapUtils.convertViewToBitmap(mImageView), this);
+                        savePatientInfo(path);
+                    }else {
+                        ToastUtils.showToastLong(this,"内存不足，请删除文件后再保存");
+                    }
+
+                }else {
                     //开始扫描
                     probe.startScan();
                     mFreqTv.setText("频率："+probe.getFreq()+"hz");
@@ -698,5 +699,32 @@ public class ScanActivity extends BaseActivity implements Probe.ScanListener,Pro
                 mSeekBarTgc4.setProgress(probe.getTgc4());
                 break;
         }
+    }
+
+    /**
+     * 添加病人信息到数据库
+     * @param path
+     */
+    private void savePatientInfo(String path)
+    {
+        //保存图片
+        PicData picdata = new PicData();
+        picdata.setDate(new Date().getTime());
+        picdata.setPath(path);
+        picdata.save();
+        //检查部位
+        if (cp ==null){
+            cp = new CheckProgrem();
+        }
+        cp.setBody("血管");
+        cp.setDate(new Date().getTime());
+        cp.getPic().add(picdata);
+        cp.save();
+        //添加病人信息
+        if (patient == null){
+        patient = new Patient();
+        }
+        patient.getCheckProgrems().add(cp);
+        patient.save();
     }
 }

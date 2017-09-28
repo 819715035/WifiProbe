@@ -14,12 +14,12 @@ import cndoppler.cn.wifiprobe.utils.DateUtils;
 
 public class Patient extends DataSupport implements Serializable{
     private long id;
-    private String name;
-    private int sex;
-    private long birthday;
-    private int age;
-    private String number;
-    private long date;
+    private String name = "临时病人";
+    private int sex = 2;
+    private long birthday = new Date().getTime();
+    private int age = 0;
+    private String number = DateUtils.dateAndTime();
+    private long date =new Date().getTime();
     private ArrayList<CheckProgrem> checkProgrems = new ArrayList<>();
 
     public long getId()

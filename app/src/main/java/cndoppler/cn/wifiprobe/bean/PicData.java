@@ -11,7 +11,7 @@ import java.io.Serializable;
 public class PicData extends DataSupport implements Serializable
 {
     private long id;
-    private int path;
+    private String path;
     private long date;
 
     public long getId()
@@ -24,12 +24,12 @@ public class PicData extends DataSupport implements Serializable
         this.id = id;
     }
 
-    public int getPath()
+    public String getPath()
     {
         return path;
     }
 
-    public void setPath(int path)
+    public void setPath(String path)
     {
         this.path = path;
     }

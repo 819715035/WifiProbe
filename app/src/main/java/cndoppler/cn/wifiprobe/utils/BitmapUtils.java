@@ -6,6 +6,7 @@ package cndoppler.cn.wifiprobe.utils;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -25,8 +26,12 @@ import android.graphics.Shader;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.ExifInterface;
+import android.media.MediaScannerConnection;
+import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
 import android.view.View;
+import android.widget.Toast;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -127,20 +132,16 @@ public class BitmapUtils {
 
     /**
      * Convert view to bitmap
-     *
+     *VIEW转bitmap
      * @param view
      * @param width
      * @param height
      * @return
      */
     public static Bitmap convertViewToBitmap(View view, int width, int height) {
-        view.measure(View.MeasureSpec.makeMeasureSpec(width, (width == UNSPECIFIED) ? View.MeasureSpec.UNSPECIFIED :
-                        View.MeasureSpec.EXACTLY),
-                View.MeasureSpec.makeMeasureSpec(height, (height == UNSPECIFIED) ? View.MeasureSpec.UNSPECIFIED :
-                        View.MeasureSpec.EXACTLY));
-        view.layout(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
-        Bitmap bitmap = Bitmap.createBitmap(view.getMeasuredWidth(), view.getMeasuredHeight(), Bitmap.Config.ARGB_8888);
-        view.draw(new Canvas(bitmap));
+        view.setDrawingCacheEnabled(true);
+        Bitmap bitmap = Bitmap.createBitmap(view.getDrawingCache());
+        view.setDrawingCacheEnabled(false);
         return bitmap;
     }
 
@@ -310,59 +311,6 @@ public class BitmapUtils {
     }
 
     /**
-     * Combine bitmaps
-     *
-     * @param bgd 后景Bitmap
-     * @param fg  前景Bitmap
-     * @return 合成后Bitmap
-     */
-    public static Bitmap combineBitmapInSameSize(Bitmap bgd, Bitmap fg) {
-        Bitmap bmp;
-
-        int width = bgd.getWidth() < fg.getWidth() ? bgd.getWidth() : fg
-                .getWidth();
-        int height = bgd.getHeight() < fg.getHeight() ? bgd.getHeight() : fg
-                .getHeight();
-
-        if (fg.getWidth() != width && fg.getHeight() != height) {
-            fg = zoom(fg, width, height);
-        }
-        if (bgd.getWidth() != width && bgd.getHeight() != height) {
-            bgd = zoom(bgd, width, height);
-        }
-
-        bmp = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-        Paint paint = new Paint();
-        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_ATOP));
-
-        Canvas canvas = new Canvas(bmp);
-        canvas.drawBitmap(bgd, 0, 0, null);
-        canvas.drawBitmap(fg, 0, 0, paint);
-
-        return bmp;
-    }
-
-    /**
-     * zoom bitmap
-     *
-     * @param bitmap 源Bitmap
-     * @param w      宽
-     * @param h      高
-     * @return 目标Bitmap
-     */
-    public static Bitmap zoom(Bitmap bitmap, int w, int h) {
-        int width = bitmap.getWidth();
-        int height = bitmap.getHeight();
-        Matrix matrix = new Matrix();
-        float scaleWidht = ((float) w / width);
-        float scaleHeight = ((float) h / height);
-        matrix.postScale(scaleWidht, scaleHeight);
-        Bitmap newbmp = Bitmap.createBitmap(bitmap, 0, 0, width, height,
-                matrix, true);
-        return newbmp;
-    }
-
-    /**
      * Get rounded corner bitmap
      *
      * @param bitmap
@@ -453,37 +401,7 @@ public class BitmapUtils {
         return bitmap;
     }
 
-    /**
-     * 将彩色图转换为灰度图
-     *
-     * @param img 源Bitmap
-     * @return 返回转换好的位图
-     */
-    public static Bitmap convertGreyImg(Bitmap img) {
-        int width = img.getWidth(); // 获取位图的宽
-        int height = img.getHeight(); // 获取位图的高
 
-        int[] pixels = new int[width * height]; // 通过位图的大小创建像素点数组
-
-        img.getPixels(pixels, 0, width, 0, 0, width, height);
-        int alpha = 0xFF << 24;
-        for (int i = 0; i < height; i++) {
-            for (int j = 0; j < width; j++) {
-                int grey = pixels[width * i + j];
-
-                int red = ((grey & 0x00FF0000) >> 16);
-                int green = ((grey & 0x0000FF00) >> 8);
-                int blue = (grey & 0x000000FF);
-
-                grey = (int) ((float) red * 0.3 + (float) green * 0.59 + (float) blue * 0.11);
-                grey = alpha | (grey << 16) | (grey << 8) | grey;
-                pixels[width * i + j] = grey;
-            }
-        }
-        Bitmap result = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
-        result.setPixels(pixels, 0, width, 0, 0, width, height);
-        return result;
-    }
 
     /**
      * Get round bitmap
@@ -760,205 +678,6 @@ public class BitmapUtils {
                 bitmap.getHeight(), matrix, true);
     }
 
-    /**
-     * 水平翻转处理
-     *
-     * @param bitmap 原图
-     * @return 水平翻转后的图片
-     */
-    public static Bitmap reverseHorizontal(Bitmap bitmap) {
-        Matrix matrix = new Matrix();
-        matrix.preScale(-1, 1);
-        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(),
-                bitmap.getHeight(), matrix, false);
-    }
-
-    /**
-     * 垂直翻转处理
-     *
-     * @param bitmap 原图
-     * @return 垂直翻转后的图片
-     */
-    public static Bitmap reverseVertical(Bitmap bitmap) {
-        Matrix matrix = new Matrix();
-        matrix.preScale(1, -1);
-        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(),
-                bitmap.getHeight(), matrix, false);
-    }
-
-    /**
-     * 更改图片色系，变亮或变暗
-     *
-     * @param delta 图片的亮暗程度值，越小图片会越亮，取值范围(0,24)
-     * @return
-     */
-    public static Bitmap adjustTone(Bitmap src, int delta) {
-        if (delta >= 24 || delta <= 0) {
-            return null;
-        }
-        // 设置高斯矩阵
-        int[] gauss = new int[]{1, 2, 1, 2, 4, 2, 1, 2, 1};
-        int width = src.getWidth();
-        int height = src.getHeight();
-        Bitmap bitmap = Bitmap.createBitmap(width, height,
-                Bitmap.Config.RGB_565);
-
-        int pixR = 0;
-        int pixG = 0;
-        int pixB = 0;
-        int pixColor = 0;
-        int newR = 0;
-        int newG = 0;
-        int newB = 0;
-        int idx = 0;
-        int[] pixels = new int[width * height];
-
-        src.getPixels(pixels, 0, width, 0, 0, width, height);
-        for (int i = 1, length = height - 1; i < length; i++) {
-            for (int k = 1, len = width - 1; k < len; k++) {
-                idx = 0;
-                for (int m = -1; m <= 1; m++) {
-                    for (int n = -1; n <= 1; n++) {
-                        pixColor = pixels[(i + m) * width + k + n];
-                        pixR = Color.red(pixColor);
-                        pixG = Color.green(pixColor);
-                        pixB = Color.blue(pixColor);
-
-                        newR += (pixR * gauss[idx]);
-                        newG += (pixG * gauss[idx]);
-                        newB += (pixB * gauss[idx]);
-                        idx++;
-                    }
-                }
-                newR /= delta;
-                newG /= delta;
-                newB /= delta;
-                newR = Math.min(255, Math.max(0, newR));
-                newG = Math.min(255, Math.max(0, newG));
-                newB = Math.min(255, Math.max(0, newB));
-                pixels[i * width + k] = Color.argb(255, newR, newG, newB);
-                newR = 0;
-                newG = 0;
-                newB = 0;
-            }
-        }
-        bitmap.setPixels(pixels, 0, width, 0, 0, width, height);
-        return bitmap;
-    }
-
-    /**
-     * 将彩色图转换为黑白图
-     *
-     * @param bmp 位图
-     * @return 返回转换好的位图
-     */
-    public static Bitmap convertToBlackWhite(Bitmap bmp) {
-        int width = bmp.getWidth();
-        int height = bmp.getHeight();
-        int[] pixels = new int[width * height];
-        bmp.getPixels(pixels, 0, width, 0, 0, width, height);
-
-        int alpha = 0xFF << 24; // 默认将bitmap当成24色图片
-        for (int i = 0; i < height; i++) {
-            for (int j = 0; j < width; j++) {
-                int grey = pixels[width * i + j];
-
-                int red = ((grey & 0x00FF0000) >> 16);
-                int green = ((grey & 0x0000FF00) >> 8);
-                int blue = (grey & 0x000000FF);
-
-                grey = (int) (red * 0.3 + green * 0.59 + blue * 0.11);
-                grey = alpha | (grey << 16) | (grey << 8) | grey;
-                pixels[width * i + j] = grey;
-            }
-        }
-        Bitmap newBmp = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
-        newBmp.setPixels(pixels, 0, width, 0, 0, width, height);
-        return newBmp;
-    }
-
-    /**
-     * 读取图片属性：图片被旋转的角度
-     *
-     * @param path 图片绝对路径
-     * @return 旋转的角度
-     */
-    public static int getImageDegree(String path) {
-        int degree = 0;
-        try {
-            ExifInterface exifInterface = new ExifInterface(path);
-            int orientation = exifInterface.getAttributeInt(
-                    ExifInterface.TAG_ORIENTATION,
-                    ExifInterface.ORIENTATION_NORMAL);
-            switch (orientation) {
-                case ExifInterface.ORIENTATION_ROTATE_90:
-                    degree = 90;
-                    break;
-                case ExifInterface.ORIENTATION_ROTATE_180:
-                    degree = 180;
-                    break;
-                case ExifInterface.ORIENTATION_ROTATE_270:
-                    degree = 270;
-                    break;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return degree;
-    }
-
-
-    /**
-     * 饱和度处理
-     *
-     * @param bitmap          原图
-     * @param saturationValue 新的饱和度值
-     * @return 改变了饱和度值之后的图片
-     */
-    public static Bitmap saturation(Bitmap bitmap, int saturationValue) {
-        // 计算出符合要求的饱和度值
-        float newSaturationValue = saturationValue * 1.0F / 127;
-        // 创建一个颜色矩阵
-        ColorMatrix saturationColorMatrix = new ColorMatrix();
-        // 设置饱和度值
-        saturationColorMatrix.setSaturation(newSaturationValue);
-        // 创建一个画笔并设置其颜色过滤器
-        Paint paint = new Paint();
-        paint.setColorFilter(new ColorMatrixColorFilter(saturationColorMatrix));
-        // 创建一个新的图片并创建画布
-        Bitmap newBitmap = Bitmap.createBitmap(bitmap.getWidth(),
-                bitmap.getHeight(), Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(newBitmap);
-        // 将原图使用给定的画笔画到画布上
-        canvas.drawBitmap(bitmap, 0, 0, paint);
-        return newBitmap;
-    }
-
-    /**
-     * 亮度处理
-     *
-     * @param bitmap   原图
-     * @param lumValue 新的亮度值
-     * @return 改变了亮度值之后的图片
-     */
-    public static Bitmap lum(Bitmap bitmap, int lumValue) {
-        // 计算出符合要求的亮度值
-        float newlumValue = lumValue * 1.0F / 127;
-        // 创建一个颜色矩阵
-        ColorMatrix lumColorMatrix = new ColorMatrix();
-        // 设置亮度值
-        lumColorMatrix.setScale(newlumValue, newlumValue, newlumValue, 1);
-        // 创建一个画笔并设置其颜色过滤器
-        Paint paint = new Paint();
-        paint.setColorFilter(new ColorMatrixColorFilter(lumColorMatrix));
-        // 创建一个新的图片并创建画布
-        Bitmap newBitmap = Bitmap.createBitmap(bitmap.getWidth(),
-                bitmap.getHeight(), Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(newBitmap);
-        // 将原图使用给定的画笔画到画布上
-        canvas.drawBitmap(bitmap, 0, 0, paint);
-        return newBitmap;
-    }
 
     /**
      * 色相处理
@@ -1034,43 +753,6 @@ public class BitmapUtils {
         return newBitmap;
     }
 
-    /**
-     * 怀旧效果
-     *
-     * @param bitmap
-     * @return
-     */
-    public static Bitmap nostalgic(Bitmap bitmap) {
-        int width = bitmap.getWidth();
-        int height = bitmap.getHeight();
-        Bitmap newBitmap = Bitmap.createBitmap(width, height,
-                Bitmap.Config.RGB_565);
-        int pixColor = 0;
-        int pixR = 0;
-        int pixG = 0;
-        int pixB = 0;
-        int newR = 0;
-        int newG = 0;
-        int newB = 0;
-        int[] pixels = new int[width * height];
-        bitmap.getPixels(pixels, 0, width, 0, 0, width, height);
-        for (int i = 0; i < height; i++) {
-            for (int k = 0; k < width; k++) {
-                pixColor = pixels[width * i + k];
-                pixR = Color.red(pixColor);
-                pixG = Color.green(pixColor);
-                pixB = Color.blue(pixColor);
-                newR = (int) (0.393 * pixR + 0.769 * pixG + 0.189 * pixB);
-                newG = (int) (0.349 * pixR + 0.686 * pixG + 0.168 * pixB);
-                newB = (int) (0.272 * pixR + 0.534 * pixG + 0.131 * pixB);
-                int newColor = Color.argb(255, newR > 255 ? 255 : newR,
-                        newG > 255 ? 255 : newG, newB > 255 ? 255 : newB);
-                pixels[width * i + k] = newColor;
-            }
-        }
-        newBitmap.setPixels(pixels, 0, width, 0, 0, width, height);
-        return newBitmap;
-    }
 
     /**
      * 柔化效果
@@ -1139,234 +821,48 @@ public class BitmapUtils {
         return newBitmap;
     }
 
+
     /**
-     * 光照效果
-     *
+     * 保存bitmap到本地
      * @param bitmap
-     * @param centerX 光源在X轴的位置
-     * @param centerY 光源在Y轴的位置
+     * @param context
      * @return
      */
-    public static Bitmap sunshine(Bitmap bitmap, int centerX, int centerY) {
-        final int width = bitmap.getWidth();
-        final int height = bitmap.getHeight();
-        Bitmap newBitmap = Bitmap.createBitmap(width, height,
-                Bitmap.Config.RGB_565);
-
-        int pixR = 0;
-        int pixG = 0;
-        int pixB = 0;
-
-        int pixColor = 0;
-
-        int newR = 0;
-        int newG = 0;
-        int newB = 0;
-        int radius = Math.min(centerX, centerY);
-
-        final float strength = 150F; // 光照强度 100~150
-        int[] pixels = new int[width * height];
-        bitmap.getPixels(pixels, 0, width, 0, 0, width, height);
-        int pos = 0;
-        for (int i = 1, length = height - 1; i < length; i++) {
-            for (int k = 1, len = width - 1; k < len; k++) {
-                pos = i * width + k;
-                pixColor = pixels[pos];
-
-                pixR = Color.red(pixColor);
-                pixG = Color.green(pixColor);
-                pixB = Color.blue(pixColor);
-
-                newR = pixR;
-                newG = pixG;
-                newB = pixB;
-
-                // 计算当前点到光照中心的距离，平面座标系中求两点之间的距离
-                int distance = (int) (Math.pow((centerY - i), 2) + Math.pow(
-                        centerX - k, 2));
-                if (distance < radius * radius) {
-                    // 按照距离大小计算增加的光照值
-                    int result = (int) (strength * (1.0 - Math.sqrt(distance)
-                            / radius));
-                    newR = pixR + result;
-                    newG = pixG + result;
-                    newB = pixB + result;
-                }
-
-                newR = Math.min(255, Math.max(0, newR));
-                newG = Math.min(255, Math.max(0, newG));
-                newB = Math.min(255, Math.max(0, newB));
-
-                pixels[pos] = Color.argb(255, newR, newG, newB);
+    public static String saveBitmapInExternalStorage(Bitmap bitmap,Context context) {
+        try {
+            File extStorage = new File(Environment.getExternalStorageDirectory().getPath() +"/wifiprobe");//wifiprobe为SD卡下一个文件夹
+            if (!extStorage.exists()) {
+                extStorage.mkdirs();
             }
+            File file = new File(extStorage,System.currentTimeMillis()+".png");
+            FileOutputStream fOut = new FileOutputStream(file);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 90, fOut);//压缩图片
+            fOut.flush();
+            fOut.close();
+            Toast.makeText(context,  "保存成功", Toast.LENGTH_SHORT).show();
+            MediaScannerConnection.scanFile(context, new String[] {file.getAbsolutePath()},null, null);
+            return file.getAbsolutePath();
         }
-
-        newBitmap.setPixels(pixels, 0, width, 0, 0, width, height);
-        return newBitmap;
+        catch (IOException ioe){
+            ioe.printStackTrace();
+            Toast.makeText(context,  "保存失败", Toast.LENGTH_SHORT).show();
+            return "";
+        }
     }
 
     /**
-     * 底片效果
-     *
+     * 得到bitmap的大小
      * @param bitmap
      * @return
      */
-    public static Bitmap film(Bitmap bitmap) {
-        // RGBA的最大值
-        final int MAX_VALUE = 255;
-        int width = bitmap.getWidth();
-        int height = bitmap.getHeight();
-        Bitmap newBitmap = Bitmap.createBitmap(width, height,
-                Bitmap.Config.RGB_565);
-
-        int pixR = 0;
-        int pixG = 0;
-        int pixB = 0;
-
-        int pixColor = 0;
-
-        int newR = 0;
-        int newG = 0;
-        int newB = 0;
-
-        int[] pixels = new int[width * height];
-        bitmap.getPixels(pixels, 0, width, 0, 0, width, height);
-        int pos = 0;
-        for (int i = 1, length = height - 1; i < length; i++) {
-            for (int k = 1, len = width - 1; k < len; k++) {
-                pos = i * width + k;
-                pixColor = pixels[pos];
-
-                pixR = Color.red(pixColor);
-                pixG = Color.green(pixColor);
-                pixB = Color.blue(pixColor);
-
-                newR = MAX_VALUE - pixR;
-                newG = MAX_VALUE - pixG;
-                newB = MAX_VALUE - pixB;
-
-                newR = Math.min(MAX_VALUE, Math.max(0, newR));
-                newG = Math.min(MAX_VALUE, Math.max(0, newG));
-                newB = Math.min(MAX_VALUE, Math.max(0, newB));
-
-                pixels[pos] = Color.argb(MAX_VALUE, newR, newG, newB);
-            }
+    public static int getBitmapSize(Bitmap bitmap){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){     //API 19
+            return bitmap.getAllocationByteCount();
         }
-
-        newBitmap.setPixels(pixels, 0, width, 0, 0, width, height);
-        return newBitmap;
-    }
-
-    /**
-     * 锐化效果
-     *
-     * @param bitmap
-     * @return
-     */
-    public static Bitmap sharpen(Bitmap bitmap) {
-        // 拉普拉斯矩阵
-        int[] laplacian = new int[]{-1, -1, -1, -1, 9, -1, -1, -1, -1};
-
-        int width = bitmap.getWidth();
-        int height = bitmap.getHeight();
-        Bitmap newBitmap = Bitmap.createBitmap(width, height,
-                Bitmap.Config.RGB_565);
-
-        int pixR = 0;
-        int pixG = 0;
-        int pixB = 0;
-
-        int pixColor = 0;
-
-        int newR = 0;
-        int newG = 0;
-        int newB = 0;
-
-        int idx = 0;
-        float alpha = 0.3F;
-        int[] pixels = new int[width * height];
-        bitmap.getPixels(pixels, 0, width, 0, 0, width, height);
-        for (int i = 1, length = height - 1; i < length; i++) {
-            for (int k = 1, len = width - 1; k < len; k++) {
-                idx = 0;
-                for (int m = -1; m <= 1; m++) {
-                    for (int n = -1; n <= 1; n++) {
-                        pixColor = pixels[(i + n) * width + k + m];
-                        pixR = Color.red(pixColor);
-                        pixG = Color.green(pixColor);
-                        pixB = Color.blue(pixColor);
-
-                        newR = newR + (int) (pixR * laplacian[idx] * alpha);
-                        newG = newG + (int) (pixG * laplacian[idx] * alpha);
-                        newB = newB + (int) (pixB * laplacian[idx] * alpha);
-                        idx++;
-                    }
-                }
-
-                newR = Math.min(255, Math.max(0, newR));
-                newG = Math.min(255, Math.max(0, newG));
-                newB = Math.min(255, Math.max(0, newB));
-
-                pixels[i * width + k] = Color.argb(255, newR, newG, newB);
-                newR = 0;
-                newG = 0;
-                newB = 0;
-            }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1){//API 12
+            return bitmap.getByteCount();
         }
-
-        newBitmap.setPixels(pixels, 0, width, 0, 0, width, height);
-        return newBitmap;
-    }
-
-    /**
-     * 浮雕效果
-     *
-     * @param bitmap
-     * @return
-     */
-    public static Bitmap emboss(Bitmap bitmap) {
-        int width = bitmap.getWidth();
-        int height = bitmap.getHeight();
-        Bitmap newBitmap = Bitmap.createBitmap(width, height,
-                Bitmap.Config.RGB_565);
-
-        int pixR = 0;
-        int pixG = 0;
-        int pixB = 0;
-
-        int pixColor = 0;
-
-        int newR = 0;
-        int newG = 0;
-        int newB = 0;
-
-        int[] pixels = new int[width * height];
-        bitmap.getPixels(pixels, 0, width, 0, 0, width, height);
-        int pos = 0;
-        for (int i = 1, length = height - 1; i < length; i++) {
-            for (int k = 1, len = width - 1; k < len; k++) {
-                pos = i * width + k;
-                pixColor = pixels[pos];
-
-                pixR = Color.red(pixColor);
-                pixG = Color.green(pixColor);
-                pixB = Color.blue(pixColor);
-
-                pixColor = pixels[pos + 1];
-                newR = Color.red(pixColor) - pixR + 127;
-                newG = Color.green(pixColor) - pixG + 127;
-                newB = Color.blue(pixColor) - pixB + 127;
-
-                newR = Math.min(255, Math.max(0, newR));
-                newG = Math.min(255, Math.max(0, newG));
-                newB = Math.min(255, Math.max(0, newB));
-
-                pixels[pos] = Color.argb(255, newR, newG, newB);
-            }
-        }
-
-        newBitmap.setPixels(pixels, 0, width, 0, 0, width, height);
-        return newBitmap;
+        return bitmap.getRowBytes() * bitmap.getHeight();                //earlier version
     }
 
 }

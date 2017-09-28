@@ -2,6 +2,7 @@ package cndoppler.cn.wifiprobe.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,7 +41,7 @@ public class PicAdapter extends RecyclerView.Adapter<PicAdapter.MyViewHolder>
     public void onBindViewHolder(PicAdapter.MyViewHolder holder, final int position)
     {
         final PicData pic = picDatas.get(position);
-        holder.iv.setImageResource(pic.getPath());
+        holder.iv.setImageURI(Uri.parse(pic.getPath()));
         holder.iv.setOnClickListener(new View.OnClickListener()
         {
             @Override

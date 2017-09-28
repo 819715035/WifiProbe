@@ -1,6 +1,7 @@
 package cndoppler.cn.wifiprobe.adapter;
 
 import android.content.Context;
+import android.net.Uri;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
@@ -47,7 +48,7 @@ public class PicViewPagerAdapter extends PagerAdapter
         params.width = ScreenUtils.getScreenHeight(context);
         params.height = ScreenUtils.getScreenHeight(context);
         imageView.setLayoutParams(params);
-        imageView.setImageResource(picDatas.get(position).getPath());
+        imageView.setImageURI(Uri.parse(picDatas.get(position).getPath()));
         container.addView(imageView);
         return imageView;
     }

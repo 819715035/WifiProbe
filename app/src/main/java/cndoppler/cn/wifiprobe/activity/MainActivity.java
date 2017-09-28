@@ -73,7 +73,6 @@ public class MainActivity extends BaseActivity implements Probe.SystemListener, 
                     openActivity(ScanActivity.class);
                     return;
                 }
-
                 if (!probe.isRequesting()) {
                     ToastUtils.showToastShort(MainActivity.this,"connecting to probe");
                     probe.initialize();
@@ -111,7 +110,7 @@ public class MainActivity extends BaseActivity implements Probe.SystemListener, 
     protected void onDestroy() {
         super.onDestroy();
         //disConnectWifi();//断开wifi连接
-        closeWifi();
+        //closeWifi();
         LogUtils.e("ondestroy");
     }
 
