@@ -68,6 +68,7 @@ public class MainActivity extends BaseActivity implements Probe.SystemListener, 
 
             public void onClick(View view)
             {
+
                 if (probe.isConnected()) {
                     //跳转到扫描页面
                     openActivity(ScanActivity.class);

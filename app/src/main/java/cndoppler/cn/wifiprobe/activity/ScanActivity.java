@@ -580,7 +580,6 @@ public class ScanActivity extends BaseActivity implements Probe.ScanListener,Pro
             mImageView.setParams(cModeFrameData.originXPx, cModeFrameData.originYPx,
                     cModeFrameData.rPx);
         }
-        LogUtils.d(bitmap.getWidth()+"==========="+bitmap.getHeight());
     }
 
     /**

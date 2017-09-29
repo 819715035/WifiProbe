@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 
 import cndoppler.cn.wifiprobe.R;
+import cndoppler.cn.wifiprobe.utils.LogUtils;
 import leltek.viewer.model.Probe;
 import leltek.viewer.model.WifiProbe;
 import leltek.viewer.util.ImageUtils;
@@ -95,9 +96,10 @@ public class UsImageView extends AppCompatImageView {
     private float roiEndR;
     private float roiDepth;
     private final float roiDepthMinLimit = 200;
-    private float scale = 1;
-    private float tx;
-    private float ty;
+    private int width;
+    private int height;
+    private float startScale;
+    private float currentScale;
 
     public UsImageView(Context context) {
         super(context);
@@ -212,7 +214,6 @@ public class UsImageView extends AppCompatImageView {
         else if (probe.getMode() == Probe.EnumMode.MODE_C) {
             cModeOnTouchEvent(event);
         }
-
         return true;
     }
 
@@ -224,6 +225,7 @@ public class UsImageView extends AppCompatImageView {
                 savedZoomMatrix.set(zoomMatrix);
                 startPoint.set(event.getX(), event.getY());
                 mode = MOVE;
+                LogUtils.myD("tag","down");
                 break;
             case MotionEvent.ACTION_POINTER_DOWN:
                 oriDist = distance(event);
@@ -232,6 +234,7 @@ public class UsImageView extends AppCompatImageView {
                     midPoint = middle(event);
                     mode = ZOOM;
                 }
+                LogUtils.myD("tag","pointdown");
                 break;
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_POINTER_UP:
@@ -241,40 +244,36 @@ public class UsImageView extends AppCompatImageView {
                 if (values[Matrix.MTRANS_Y] > 0) {
                     zoomMatrix.postTranslate(0, -values[Matrix.MTRANS_Y]);
                 }
-
+                LogUtils.myD("tag","onpint=====up");
                 break;
             case MotionEvent.ACTION_MOVE:
                 if (mode == MOVE) {
                     zoomMatrix.set(savedZoomMatrix);
-
-                    tx = event.getX() - startPoint.x;
-                    ty = event.getY() - startPoint.y;
-
+                    float tx = event.getX() - startPoint.x;
+                    float ty = event.getY() - startPoint.y;
                     zoomMatrix.getValues(values);
-
                     ty = checkTyBound(values, ty);
                     tx = checkTxBound(values, tx);
                     //平移
+                    LogUtils.myD("tag","pingyi"+tx+"==="+ty);
                     zoomMatrix.postTranslate(tx, ty);
-                    drawCenterLine(canvas);
                 } else if (mode == ZOOM) {
                     float newDist = distance(event);
                     if (newDist > 10f) {
-                        scale = newDist / oriDist;
+                        float scale = newDist / oriDist;
                         zoomMatrix.set(savedZoomMatrix);
 
                         zoomMatrix.getValues(values);
                         //缩放倍数
                         scale = checkFitScale(scale, values);
                         zoomMatrix.postScale(scale, scale, midPoint.x, midPoint.y);
-                        drawDepthLine(canvas);
+                        LogUtils.myD("tag","suofang"+scale);
                     }
                 }
                 break;
         }
 
         setImageMatrix(zoomMatrix);
-        postInvalidate();
     }
 
     @Override
@@ -393,32 +392,58 @@ public class UsImageView extends AppCompatImageView {
 
     @Override
     protected void onDraw(Canvas canvas) {
+        LogUtils.myE("tag","ondraw");
         super.onDraw(canvas);
         if (probe.getMode() == Probe.EnumMode.MODE_C) {
             drawOutline(canvas);
         }
-
+        drawDepthLine(canvas);
+        drawCenterLine(canvas);
+        getScale();
     }
 
     //画中心线
     private void drawCenterLine(Canvas canvas)
     {
-        int heightSpace = getHeight()/10;
+        float[] values = new float[9];
+        zoomMatrix.getValues(values);
         for (int i=0;i<=10;i++){
-            canvas.drawPoint(getWidth()/2-tx,heightSpace*(i+1)*scale-ty,paint);
+            canvas.drawPoint(width*currentScale+values[Matrix.MTRANS_X],height*(i+1)*currentScale+values[Matrix.MTRANS_Y],paint);
         }
     }
 
     //画深度线
     private void drawDepthLine(Canvas canvas)
     {
-        int heightSpace = getHeight()/10;
-        canvas.drawLine(10,-ty,10,heightSpace*10*scale-ty,paint);
+        float[] values = new float[9];
+        zoomMatrix.getValues(values);
+        for (int i=0;i<values.length;i++){
+            LogUtils.myI("values","value["+i+"]==="+values[i]);
+        }
+        LogUtils.myE("currentScale","currentScale==="+currentScale);
+        canvas.drawLine(10,0,10,height*10-values[Matrix.MTRANS_Y],paint);
         for (int i=0;i<=10;i++){
-            canvas.drawLine(10,heightSpace*i*scale-ty,20,heightSpace*i*scale-ty,paint);
-            canvas.drawText(i*0.5f+"cm",15,heightSpace*i*scale-ty+15,paint);
+            canvas.drawLine(10,height*i*currentScale+values[Matrix.MTRANS_Y],20,height*i*currentScale+values[Matrix.MTRANS_Y],paint);
+            canvas.drawText(i*0.5f+"cm",15,height*i*currentScale+15+values[Matrix.MTRANS_Y],paint);
         }
     }
+
+    /**
+     *得到当前缩放的比例
+     */
+    private float getScale(){
+        float[] values = new float[9];
+        zoomMatrix.getValues(values);
+        if (startScale<=1){
+            startScale = values[Matrix.MSCALE_X];
+            currentScale = 1;
+        }else{
+            currentScale = values[Matrix.MSCALE_X]/startScale;
+        }
+        LogUtils.myE("endScale","endScale==="+startScale);
+        return currentScale;
+    }
+
 
     public void cModeOnTouchEvent(MotionEvent event) {
         float x = event.getX();
@@ -1071,4 +1096,11 @@ public class UsImageView extends AppCompatImageView {
         return (float) Math.atan(a);
     }
 
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh)
+    {
+        super.onSizeChanged(w, h, oldw, oldh);
+        width = getWidth()/2;
+        height = getHeight()/10;
+    }
 }
