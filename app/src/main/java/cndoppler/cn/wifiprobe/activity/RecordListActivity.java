@@ -78,7 +78,7 @@ public class RecordListActivity extends BaseActivity {
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l)
             {
                 startOpenScanActivity(i);
-                return false;
+                return true;
             }
         });
         addRecordBtn.setOnClickListener(new View.OnClickListener() {

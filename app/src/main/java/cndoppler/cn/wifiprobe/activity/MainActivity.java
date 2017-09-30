@@ -1,8 +1,14 @@
 package cndoppler.cn.wifiprobe.activity;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.Build;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.Button;
 
@@ -108,6 +114,19 @@ public class MainActivity extends BaseActivity implements Probe.SystemListener, 
     }
 
     @Override
+    protected void onResume()
+    {
+        super.onResume();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+        {
+            if (ContextCompat.checkSelfPermission(this,Manifest.permission.READ_EXTERNAL_STORAGE)!= PackageManager.PERMISSION_GRANTED){
+                //没有授权
+                ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},0);
+            }
+        }
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         //disConnectWifi();//断开wifi连接
@@ -151,5 +170,18 @@ public class MainActivity extends BaseActivity implements Probe.SystemListener, 
     public void onTemperatureOverHeated(int temperature)
     {
         ToastUtils.showToastShort(this,"Temperature over heated, now is " + temperature + " °");
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
+    {
+        if (requestCode == 0){
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED){
+
+            }else{
+                ToastUtils.showToastShort(this,"没有读取内存卡的权限，将无法截图");
+            }
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 }

@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import org.litepal.crud.DataSupport;
 
+import java.io.File;
 import java.util.Date;
 
 import cndoppler.cn.wifiprobe.R;
@@ -697,7 +698,7 @@ public class ScanActivity extends BaseActivity implements Probe.ScanListener,Pro
                 mSeekBarTgc4.setProgress(probe.getTgc4());
                 break;
             case R.id.saveimg_btn:
-                //重置所有tgc
+                //保存图片
                 Bitmap currentBitmap = BitmapUtils.convertViewToBitmap(mImageView);
                 if (BitmapUtils.getBitmapSize(currentBitmap) < SDCUtils.getSDFreeSize())
                 {
@@ -716,28 +717,33 @@ public class ScanActivity extends BaseActivity implements Probe.ScanListener,Pro
      */
     private void savePatientInfo(String path)
     {
-        Intent intent = getIntent();
-        Patient patient = (Patient) intent.getSerializableExtra("patient");
-        //保存图片
-        PicData picdata = new PicData();
-        picdata.setDate(new Date().getTime());
-        picdata.setPath(path);
-        picdata.save();
-        //检查部位
-        if (cp ==null){
-            cp = new CheckProgrem();
+        File file = new File(path);
+        if (file.exists() && file.isFile()){
+            Intent intent = getIntent();
+            Patient patient = (Patient) intent.getSerializableExtra("patient");
+            //保存图片
+            PicData picdata = new PicData();
+            picdata.setDate(new Date().getTime());
+            picdata.setPath(path);
+            picdata.save();
+            //检查部位
+            if (cp ==null){
+                cp = new CheckProgrem();
+            }
+            cp.setBody("血管");
+            cp.setDate(new Date().getTime());
+            cp.getPic().add(picdata);
+            cp.save();
+            //添加病人信息
+            if (patient == null){
+                patient = new Patient();
+            }else {
+                patient = DataSupport.find(Patient.class,patient.getId(),true);
+            }
+            patient.getCheckProgrems().add(cp);
+            patient.save();
+        }else{
+            ToastUtils.showToastShort(this,"截图失败，请重试");
         }
-        cp.setBody("血管");
-        cp.setDate(new Date().getTime());
-        cp.getPic().add(picdata);
-        cp.save();
-        //添加病人信息
-        if (patient == null){
-            patient = new Patient();
-        }else {
-            patient = DataSupport.find(Patient.class,patient.getId(),true);
-        }
-        patient.getCheckProgrems().add(cp);
-        patient.save();
     }
 }
