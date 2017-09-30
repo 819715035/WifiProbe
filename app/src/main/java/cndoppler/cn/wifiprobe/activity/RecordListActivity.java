@@ -25,6 +25,8 @@ import cndoppler.cn.wifiprobe.bean.Patient;
 import cndoppler.cn.wifiprobe.bean.PicData;
 import cndoppler.cn.wifiprobe.utils.BaseActivity;
 import cndoppler.cn.wifiprobe.utils.LogUtils;
+import cndoppler.cn.wifiprobe.utils.ToastUtils;
+import leltek.viewer.model.WifiProbe;
 
 public class RecordListActivity extends BaseActivity {
 
@@ -70,6 +72,15 @@ public class RecordListActivity extends BaseActivity {
                 startReadPatientActivity(patients.get(i));
             }
         });
+        patientLv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener()
+        {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l)
+            {
+                startOpenScanActivity(i);
+                return false;
+            }
+        });
         addRecordBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -86,6 +97,33 @@ public class RecordListActivity extends BaseActivity {
                 searchAt.setText("");
             }
         });
+    }
+
+    private void startOpenScanActivity(final int position)
+    {
+        new AlertDialog.Builder(this)
+                .setTitle("温馨提示")
+                .setMessage("您确定要为"+patients.get(position).getName()+"病人做检查吗？")
+                .setPositiveButton("确定", new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i)
+                    {
+                        if (WifiProbe.getDefault().isConnected())
+                        {
+                            Bundle bundle = new Bundle();
+                            bundle.putSerializable("patient", patients.get(position));
+                            openActivity(ScanActivity.class, bundle);
+                        }else{
+                            ToastUtils.showToastShort(RecordListActivity.this,"无线探头连接异常，请连接成功后再操作");
+                            WifiProbe.getDefault().initialize();
+                        }
+                    }
+                })
+                .setNegativeButton("取消",null)
+                .create()
+                .show();
+
     }
 
     /**

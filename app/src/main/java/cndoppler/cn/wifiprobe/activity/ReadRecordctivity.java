@@ -10,6 +10,8 @@ import android.widget.TextView;
 
 import org.litepal.crud.DataSupport;
 
+import java.util.Collections;
+
 import cndoppler.cn.wifiprobe.R;
 import cndoppler.cn.wifiprobe.adapter.CheckProgremAdapter;
 import cndoppler.cn.wifiprobe.adapter.PicAdapter;
@@ -105,7 +107,8 @@ public class ReadRecordctivity extends BaseActivity {
     private void getCheckProgrem()
     {
         if(patient.getCheckProgrems()!=null&&patient.getCheckProgrems().size()>0){
-           checkProgremAdapter = new CheckProgremAdapter(this,patient.getCheckProgrems());
+            Collections.reverse(patient.getCheckProgrems());
+            checkProgremAdapter = new CheckProgremAdapter(this,patient.getCheckProgrems());
             check_lv.setAdapter(checkProgremAdapter);
             setPicdataAdapter(0);
             nocheck_tv.setVisibility(View.GONE);

@@ -1,11 +1,15 @@
 package cndoppler.cn.wifiprobe.activity;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.NumberPicker;
 import android.widget.SeekBar;
 import android.widget.TextView;
+
+import org.litepal.crud.DataSupport;
 
 import java.util.Date;
 
@@ -15,7 +19,6 @@ import cndoppler.cn.wifiprobe.bean.Patient;
 import cndoppler.cn.wifiprobe.bean.PicData;
 import cndoppler.cn.wifiprobe.utils.BaseActivity;
 import cndoppler.cn.wifiprobe.utils.BitmapUtils;
-import cndoppler.cn.wifiprobe.utils.LogUtils;
 import cndoppler.cn.wifiprobe.utils.SDCUtils;
 import cndoppler.cn.wifiprobe.utils.ToastUtils;
 import cndoppler.cn.wifiprobe.widgets.UsImageView;
@@ -531,6 +534,14 @@ public class ScanActivity extends BaseActivity implements Probe.ScanListener,Pro
             //开始扫描
             probe.startScan();
         }
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+    }
+
+    @Override
+    protected void onPause()
+    {
+        super.onPause();
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
     @Override
@@ -705,6 +716,8 @@ public class ScanActivity extends BaseActivity implements Probe.ScanListener,Pro
      */
     private void savePatientInfo(String path)
     {
+        Intent intent = getIntent();
+        Patient patient = (Patient) intent.getSerializableExtra("patient");
         //保存图片
         PicData picdata = new PicData();
         picdata.setDate(new Date().getTime());
@@ -720,7 +733,9 @@ public class ScanActivity extends BaseActivity implements Probe.ScanListener,Pro
         cp.save();
         //添加病人信息
         if (patient == null){
-        patient = new Patient();
+            patient = new Patient();
+        }else {
+            patient = DataSupport.find(Patient.class,patient.getId(),true);
         }
         patient.getCheckProgrems().add(cp);
         patient.save();
