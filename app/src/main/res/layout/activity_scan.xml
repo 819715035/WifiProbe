@@ -183,6 +183,7 @@
                     android:max="3"
                     android:progress="0" />
                 <TextView
+                    android:id="@+id/cgain_tv"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="ColorGain" />
@@ -196,6 +197,7 @@
                     android:max="100"
                     android:progress="0" />
                 <TextView
+                    android:id="@+id/cPersistence_tv"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="ColorPersistence" />
@@ -209,6 +211,7 @@
                     android:max="4"
                     android:progress="0" />
                 <TextView
+                    android:id="@+id/cPrf_tv"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="ColorPrf" />
@@ -222,6 +225,7 @@
                     android:max="2"
                     android:progress="0" />
                 <TextView
+                    android:id="@+id/cThresHold_tv"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="ColorThreshold" />
@@ -237,32 +241,6 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="EnumColorWall" />
-
-                <SeekBar
-                    android:id="@+id/seekBarEnumColorWall"
-                    style="@style/Widget.AppCompat.SeekBar.Discrete"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="20dp"
-                    android:max="6"
-                    android:progress="0" />
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="ColorAngle" />
-
-                <SeekBar
-                    android:id="@+id/seekBarColorAngle"
-                    style="@style/Widget.AppCompat.SeekBar.Discrete"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="20dp"
-                    android:max="6"
-                    android:progress="0" />
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
                     android:text="Gray Map" />
                 <NumberPicker
                     android:id="@+id/np"
@@ -270,187 +248,205 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:descendantFocusability="blocksDescendants"/>
-                <Button
-                    android:id="@+id/test_conn_error"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Test Conn Error" />
-
-                <Button
-                    android:id="@+id/test_over_heated"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Test Over Heated" />
-
-                <Button
-                    android:id="@+id/test_battery_low"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Test Battery Low" />
             </LinearLayout>
         </android.support.v4.widget.NestedScrollView>
     </LinearLayout>
+
     <RelativeLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:background="@android:color/black"
         android:layout_weight="4"
+        android:background="@android:color/black"
         >
+        <LinearLayout
+            android:id="@+id/patient_info_ll"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/patient_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="病人ID:20171009094850"
+                android:padding="5dp"
+                android:textColor="#ffffff"/>
+            <TextView
+                android:id="@+id/patientname_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="姓名:临时病人"
+                android:padding="5dp"
+                android:textColor="#ffffff"/>
+            <TextView
+                android:id="@+id/patientage_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="年龄：0岁"
+                android:padding="5dp"
+                android:textColor="#ffffff"/>
+        </LinearLayout>
         <cndoppler.cn.wifiprobe.widgets.UsImageView
             android:id="@+id/image_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="matrix"
+            android:layout_below="@+id/patient_info_ll"
             />
+
         <ScrollView
+            android:layout_below="@+id/patient_info_ll"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_alignParentRight="true"
             >
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical">
+
                 <TextView
                     android:id="@+id/wedth_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="温度"
                     android:layout_margin="5dp"
+                    android:text="温度"
                     android:textColor="#00ff00"/>
+
                 <TextView
                     android:id="@+id/power_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="电量"
-                    android:layout_margin="5dp"
                     android:layout_below="@+id/wedth_tv"
+                    android:layout_margin="5dp"
+                    android:text="电量"
                     android:textColor="#00ff00"/>
+
                 <TextView
                     android:id="@+id/depth_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="深度"
                     android:layout_margin="5dp"
+                    android:text="深度"
                     android:textColor="#00ff00"/>
+
                 <TextView
                     android:id="@+id/gain_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="增益"
                     android:layout_margin="5dp"
+                    android:text="增益"
                     android:textColor="#00ff00"/>
+
                 <TextView
                     android:id="@+id/dr_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="动态范围"
                     android:layout_margin="5dp"
+                    android:text="动态范围"
                     android:textColor="#00ff00"/>
+
                 <TextView
                     android:id="@+id/graymap_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="灰度图"
                     android:layout_margin="5dp"
+                    android:text="灰度图"
                     android:textColor="#00ff00"/>
+
                 <TextView
                     android:id="@+id/persistence_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="帧相关"
                     android:layout_margin="5dp"
+                    android:text="帧相关"
                     android:textColor="#00ff00"/>
+
                 <TextView
                     android:id="@+id/enhancelevel_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="增强等级"
                     android:layout_margin="5dp"
+                    android:text="增强等级"
                     android:textColor="#00ff00"/>
+
                 <TextView
                     android:id="@+id/tg1_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="tg1"
                     android:layout_margin="5dp"
+                    android:text="tg1"
                     android:textColor="#00ff00"/>
+
                 <TextView
                     android:id="@+id/tg2_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="tg2"
                     android:layout_margin="5dp"
+                    android:text="tg2"
                     android:textColor="#00ff00"/>
+
                 <TextView
                     android:id="@+id/tg3_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="tg3"
                     android:layout_margin="5dp"
+                    android:text="tg3"
                     android:textColor="#00ff00"/>
+
                 <TextView
                     android:id="@+id/tg4_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="tg4"
                     android:layout_margin="5dp"
+                    android:text="tg4"
                     android:textColor="#00ff00"/>
+
                 <TextView
                     android:id="@+id/colorgain_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="彩色增益"
                     android:layout_margin="5dp"
+                    android:text="彩色增益"
                     android:textColor="#00ff00"/>
+
                 <TextView
                     android:id="@+id/colorPersistence_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="彩色帧相关"
                     android:layout_margin="5dp"
+                    android:text="彩色帧相关"
                     android:textColor="#00ff00"/>
+
                 <TextView
                     android:id="@+id/colorprf_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="prf"
                     android:layout_margin="5dp"
+                    android:text="prf"
                     android:textColor="#00ff00"/>
+
                 <TextView
                     android:id="@+id/colorThresHold_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
                     android:text="colorthreshold"
-                    android:layout_margin="5dp"
                     android:textColor="#00ff00"/>
-                <TextView
-                    android:id="@+id/enumcolorWALL_tv"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="壁滤波"
-                    android:layout_margin="5dp"
-                    android:textColor="#00ff00"/>
-                <TextView
-                    android:id="@+id/colorangle_tv"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="colorangle"
-                    android:layout_margin="5dp"
-                    android:textColor="#00ff00"/>
+
                 <TextView
                     android:id="@+id/frameRate_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="帧频率"
                     android:layout_margin="5dp"
+                    android:text="帧频率"
                     android:textColor="#00ff00"/>
+
                 <TextView
                     android:id="@+id/freq_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="频率"
                     android:layout_margin="5dp"
+                    android:text="频率"
                     android:textColor="#00ff00"/>
             </LinearLayout>
         </ScrollView>

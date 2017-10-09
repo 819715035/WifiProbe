@@ -2,6 +2,7 @@ package cndoppler.cn.wifiprobe.activity;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -36,9 +37,6 @@ public class ScanActivity extends BaseActivity implements Probe.ScanListener,Pro
     private Button mFit;//fit模式
     private UsImageView mImageView;//扫描成像控件
     private TextView mCineBufferCount; //gine提示
-    private Button mTestConnectionError;//测试连接错误
-    private Button mTestOverHeated;//测试健康
-    private Button mTestBatteryLow;//测试电量
     private SeekBar mSeekBarGain;//gain滚动条
     private SeekBar mSeekBarDr;//dynamic range滚动条
     private SeekBar mSeekBarTgc1;//tgc1滚动条
@@ -50,8 +48,10 @@ public class ScanActivity extends BaseActivity implements Probe.ScanListener,Pro
     private Button mResetAllTgc;//重置tgc按钮
     private NumberPicker mNumberPicker;//数字选择器
     private TextView mWedthTv,mPowerTv,mDepthTv,mGainTv,mDrTv,mGrayMapTv,mPersistenceTv,mEnhancelevelTv,mTgc1tV,mTgc2Tv,mTgc3Tv,mTgc4Tv,mColorGainTv,mColorPersistenceTv
-            ,mColorPrfTv,mColorThresholTv,mEnumColorWallTv,mColorAngleTv,mFrameRateTv,mFreqTv;
-    private SeekBar mDepthSb,mColorGainSb,mColorPersistenceSb,mColorPrfSb,mColorThresholdSb,mEnumColorWallSb,mColorAngleSb;
+            ,mColorPrfTv,mColorThresholTv,mFrameRateTv,mFreqTv;
+    private TextView mCGainTv,mCPersistenceTv,mCPrfTv,mCThresHoldTv;
+    private TextView mPatientIdTv,mPatientNameTv,mPatientAgeTv;
+    private SeekBar mDepthSb,mColorGainSb,mColorPersistenceSb,mColorPrfSb,mColorThresholdSb;
     private Button saveimgBtn;
     private Patient patient;
     private CheckProgrem cp;
@@ -79,12 +79,6 @@ public class ScanActivity extends BaseActivity implements Probe.ScanListener,Pro
         mFit.setOnClickListener(this);
         mImageView = mFindViewById(R.id.image_view);
         mCineBufferCount = mFindViewById(R.id.cine_buffer_count);
-        mTestConnectionError = mFindViewById(R.id.test_conn_error);
-        mTestConnectionError.setOnClickListener(this);
-        mTestOverHeated = mFindViewById(R.id.test_over_heated);
-        mTestOverHeated.setOnClickListener(this);
-        mTestBatteryLow = mFindViewById(R.id.test_battery_low);
-        mTestBatteryLow.setOnClickListener(this);
         saveimgBtn = findViewById(R.id.saveimg_btn);
         saveimgBtn.setOnClickListener(this);
         mWedthTv = mFindViewById(R.id.wedth_tv);
@@ -105,8 +99,6 @@ public class ScanActivity extends BaseActivity implements Probe.ScanListener,Pro
         mColorPersistenceTv = mFindViewById(R.id.colorPersistence_tv);
         mColorPrfTv = mFindViewById(R.id.colorprf_tv);
         mColorThresholTv = mFindViewById(R.id.colorThresHold_tv);
-        mEnumColorWallTv = mFindViewById(R.id.enumcolorWALL_tv);
-        mColorAngleTv = mFindViewById(R.id.colorangle_tv);
         mSeekBarGain = mFindViewById(R.id.seekBarGain);
         mSeekBarGain.setProgress(probe.getGain());
         mSeekBarGain.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -424,84 +416,17 @@ public class ScanActivity extends BaseActivity implements Probe.ScanListener,Pro
 
             }
         });
-        mEnumColorWallSb = mFindViewById(R.id.seekBarEnumColorWall);
-        mEnumColorWallSb.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                switch (i){
-                    case 0:
-                        probe.setColorWall(Probe.EnumColorWall.ColorWall_14);
-                        break;
-                    case 1:
-                        probe.setColorWall(Probe.EnumColorWall.ColorWall_19);
-                        break;
-                    case 2:
-                        probe.setColorWall(Probe.EnumColorWall.ColorWall_24);
-                        break;
-                    case 3:
-                        probe.setColorWall(Probe.EnumColorWall.ColorWall_34);
-                        break;
-                    case 4:
-                        probe.setColorWall(Probe.EnumColorWall.ColorWall_49);
-                        break;
-                    case 5:
-                        probe.setColorWall(Probe.EnumColorWall.ColorWall_53);
-                        break;
-                    case 6:
-                        probe.setColorWall(Probe.EnumColorWall.ColorWall_73);
-                        break;
-                }
-                mEnumColorWallTv.setText("壁滤波："+probe.getColorWall());
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });
-        mColorAngleSb = mFindViewById(R.id.seekBarColorAngle);
-        mColorAngleSb.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                switch (i){
-                    case 0:
-                        probe.setColorAngle(-3);
-                        break;
-                    case 1:
-                        probe.setColorAngle(-6);
-                        break;
-                    case 2:
-                        probe.setColorAngle(0);
-                        break;
-                    case 3:
-                        probe.setColorAngle(3);
-                        break;
-                    case 4:
-                        probe.setColorAngle(6);
-                        break;
-                }
-                mColorAngleTv.setText("ColorAngle："+probe.getColorAngle());
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });
         mFrameRateTv = mFindViewById(R.id.frameRate_tv);
         mFrameRateTv.setText("帧频率:"+probe.getFrameRate());
         mFreqTv = mFindViewById(R.id.freq_tv);
         mFreqTv.setText("频率："+probe.getFreq()+"hz");
+        mCGainTv = findViewById(R.id.cgain_tv);
+        mCPersistenceTv = findViewById(R.id.cPersistence_tv);
+        mCPrfTv = findViewById(R.id.cPrf_tv);
+        mCThresHoldTv = findViewById(R.id.cThresHold_tv);
+        mPatientIdTv = findViewById(R.id.patient_tv);
+        mPatientNameTv = findViewById(R.id.patientname_tv);
+        mPatientAgeTv = findViewById(R.id.patientage_tv);
     }
 
     @Override
@@ -520,6 +445,23 @@ public class ScanActivity extends BaseActivity implements Probe.ScanListener,Pro
     }
 
     @Override
+    protected void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+        Intent intent = getIntent();
+        patient = (Patient) intent.getSerializableExtra("patient");
+        //添加病人信息
+        if (patient == null){
+            patient = new Patient();
+        }else {
+            patient = DataSupport.find(Patient.class,patient.getId(),true);
+        }
+        mPatientIdTv.setText("病人ID："+patient.getNumber());
+        mPatientNameTv.setText("病人名字："+patient.getName());
+        mPatientAgeTv.setText("岁数："+patient.getAge());
+    }
+
+    @Override
     protected void onStop() {
         super.onStop();
         probe.stopScan();
@@ -531,10 +473,12 @@ public class ScanActivity extends BaseActivity implements Probe.ScanListener,Pro
         if (probe.getMode() == Probe.EnumMode.MODE_C) {
             //切换到b模式
             probe.swithToBMode();
-        } if (probe.getMode() == Probe.EnumMode.MODE_B && !probe.isLive()) {
+        }
+        if (probe.getMode() == Probe.EnumMode.MODE_B && !probe.isLive()) {
             //开始扫描
             probe.startScan();
         }
+
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
@@ -664,30 +608,16 @@ public class ScanActivity extends BaseActivity implements Probe.ScanListener,Pro
             case R.id.bMode:
                 //切换到b模式
                 probe.swithToBMode();
+                hiddenOrShowCFModeLayout(true);
                 break;
             case R.id.cMode:
                 //切换到cf模式
                 probe.swithToCMode();
+                hiddenOrShowCFModeLayout(false);
                 break;
             case R.id.fit:
                 //切换到fit模式
                 switchFit();
-                break;
-            case R.id.test_conn_error:
-                //测试连接错误
-                ((WifiProbe) probe).testConnectionClosed();
-                break;
-            case R.id.test_over_heated:
-                //监听温度
-                // ((WifiProbe) probe).testOverHeated();
-                mWedthTv.setText("温度："+probe.getTemperature()+" °");
-                ToastUtils.showToastShort(this,"温度："+probe.getTemperature()+" °");
-                break;
-            case R.id.test_battery_low:
-                //监听电量
-                //((WifiProbe) probe).testBatteryLevelTooLow();
-                mPowerTv.setText("电量："+probe.getBatteryLevel()+"%");
-                ToastUtils.showToastShort(this,"电量："+probe.getBatteryLevel()+"%");
                 break;
             case R.id.resetAllTgc:
                 //重置所有tgc
@@ -711,6 +641,39 @@ public class ScanActivity extends BaseActivity implements Probe.ScanListener,Pro
         }
     }
 
+
+    /**
+     * 隐藏或显示cf模式的控件
+     */
+    private void hiddenOrShowCFModeLayout(boolean hiddlen)
+    {
+        hiddenLayout(hiddlen,mColorGainSb,
+                mColorPersistenceSb,
+                mColorPrfSb,
+                mColorThresholdSb,
+                mCGainTv,
+                mCPersistenceTv,
+                mCPrfTv,
+                mCThresHoldTv,
+                mColorGainTv,
+                mColorPersistenceTv,
+                mColorPrfTv,
+                mColorThresholTv);
+    }
+
+    private void hiddenLayout(boolean hiddlen,View... views)
+    {
+        int tag;
+        if (hiddlen){
+            tag = View.GONE;
+        }else{
+            tag = View.VISIBLE;
+        }
+        for (int i=0;i<views.length;i++){
+            views[i].setVisibility(tag);
+        }
+    }
+
     /**
      * 添加病人信息到数据库
      * @param path
@@ -719,8 +682,6 @@ public class ScanActivity extends BaseActivity implements Probe.ScanListener,Pro
     {
         File file = new File(path);
         if (file.exists() && file.isFile()){
-            Intent intent = getIntent();
-            Patient patient = (Patient) intent.getSerializableExtra("patient");
             //保存图片
             PicData picdata = new PicData();
             picdata.setDate(new Date().getTime());
@@ -734,12 +695,6 @@ public class ScanActivity extends BaseActivity implements Probe.ScanListener,Pro
             cp.setDate(new Date().getTime());
             cp.getPic().add(picdata);
             cp.save();
-            //添加病人信息
-            if (patient == null){
-                patient = new Patient();
-            }else {
-                patient = DataSupport.find(Patient.class,patient.getId(),true);
-            }
             patient.getCheckProgrems().add(cp);
             patient.save();
         }else{

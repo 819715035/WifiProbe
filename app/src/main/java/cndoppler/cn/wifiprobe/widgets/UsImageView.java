@@ -423,6 +423,7 @@ public class UsImageView extends AppCompatImageView {
         canvas.drawLine(10,0,10,height*10-values[Matrix.MTRANS_Y],paint);
         for (int i=0;i<=10;i++){
             canvas.drawLine(10,height*i*currentScale+values[Matrix.MTRANS_Y],20,height*i*currentScale+values[Matrix.MTRANS_Y],paint);
+            //标记刻度
             canvas.drawText(i*0.5f+"cm",15,height*i*currentScale+15+values[Matrix.MTRANS_Y],paint);
         }
     }
