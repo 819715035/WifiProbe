@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#e8a91f"
+    >
+    <RadioGroup
+        android:id="@+id/measure_rg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <RadioButton
+            android:id="@+id/dmeasure_rb"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="距离"/>
+        <RadioButton
+            android:id="@+id/rmeasure_rb"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="矩形"/>
+        <RadioButton
+            android:id="@+id/cmeasure_rb"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="椭圆"/>
+    </RadioGroup>
+    <Button
+        android:id="@+id/back_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="撤销"/>
+    <Button
+        android:id="@+id/delect_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="删除"/>
+</LinearLayout>

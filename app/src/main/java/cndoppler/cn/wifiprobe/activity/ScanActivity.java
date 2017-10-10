@@ -9,17 +9,15 @@ import android.widget.Button;
 import android.widget.NumberPicker;
 import android.widget.SeekBar;
 import android.widget.TextView;
-
 import org.litepal.crud.DataSupport;
-
 import java.io.File;
 import java.util.Date;
-
 import cndoppler.cn.wifiprobe.R;
 import cndoppler.cn.wifiprobe.bean.CheckProgrem;
 import cndoppler.cn.wifiprobe.bean.Patient;
 import cndoppler.cn.wifiprobe.bean.PicData;
 import cndoppler.cn.wifiprobe.utils.BaseActivity;
+import cndoppler.cn.wifiprobe.utils.BasePopuWindows;
 import cndoppler.cn.wifiprobe.utils.BitmapUtils;
 import cndoppler.cn.wifiprobe.utils.SDCUtils;
 import cndoppler.cn.wifiprobe.utils.ToastUtils;
@@ -55,6 +53,9 @@ public class ScanActivity extends BaseActivity implements Probe.ScanListener,Pro
     private Button saveimgBtn;
     private Patient patient;
     private CheckProgrem cp;
+    private Button mMeasureBtn;
+    private BasePopuWindows popuWindows;
+    private Button removeCurrentPointBtn;
 
     @Override
     public void setContent() {
@@ -427,6 +428,24 @@ public class ScanActivity extends BaseActivity implements Probe.ScanListener,Pro
         mPatientIdTv = findViewById(R.id.patient_tv);
         mPatientNameTv = findViewById(R.id.patientname_tv);
         mPatientAgeTv = findViewById(R.id.patientage_tv);
+        mMeasureBtn = findViewById(R.id.measure_btn);
+        mMeasureBtn.setOnClickListener(this);
+        View showView = View.inflate(this,R.layout.item_measure,null);
+        popuWindows = new BasePopuWindows(this,BasePopuWindows.TYPE_MATCH_PARENT,showView,false);
+        removeCurrentPointBtn = showView.findViewById(R.id.back_btn);
+        setListener();
+    }
+
+    private void setListener()
+    {
+        removeCurrentPointBtn.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                mImageView.removeDistanceCurrentPoint();
+            }
+        });
     }
 
     @Override
@@ -636,6 +655,14 @@ public class ScanActivity extends BaseActivity implements Probe.ScanListener,Pro
                     savePatientInfo(path);
                 }else {
                     ToastUtils.showToastLong(this,"内存不足，请删除文件后再保存");
+                }
+                break;
+            case R.id.measure_btn:
+                //测量
+                if (popuWindows.mPopupWindow.isShowing()){
+                    popuWindows.dismiss();
+                }else{
+                    popuWindows.showAsRightTop(mMeasureBtn,0,0);
                 }
                 break;
         }

@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.RectF;
 import android.support.v7.widget.AppCompatImageView;
@@ -18,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import cndoppler.cn.wifiprobe.R;
 import cndoppler.cn.wifiprobe.utils.LogUtils;
@@ -99,6 +101,8 @@ public class UsImageView extends AppCompatImageView {
     private int height;
     private float startScale;
     private float currentScale;
+    private float offsetX;
+    private List<Point> dPoint = new ArrayList<>();
 
     public UsImageView(Context context) {
         super(context);
@@ -121,7 +125,7 @@ public class UsImageView extends AppCompatImageView {
         int widthPx = probe.getImageWidthPx();
         int pixCount = heightPx * widthPx;
         setImageBitmap(ImageUtils.createBitmap(new byte[pixCount], widthPx, heightPx, pixCount));
-
+        LogUtils.myD("tag",widthPx+"===========================widthPx");
         fitWidth = false;
 
         setFocusable(true);
@@ -207,6 +211,10 @@ public class UsImageView extends AppCompatImageView {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_UP){
+            dPoint.add(new Point((int)event.getX(),(int)event.getY()));
+            postInvalidate();
+        }
         if (probe.getMode() == Probe.EnumMode.MODE_B) {
             bModeOnTouchEvent(event);
         }
@@ -224,7 +232,6 @@ public class UsImageView extends AppCompatImageView {
                 savedZoomMatrix.set(zoomMatrix);
                 startPoint.set(event.getX(), event.getY());
                 mode = MOVE;
-                LogUtils.myD("tag","down");
                 break;
             case MotionEvent.ACTION_POINTER_DOWN:
                 oriDist = distance(event);
@@ -233,7 +240,6 @@ public class UsImageView extends AppCompatImageView {
                     midPoint = middle(event);
                     mode = ZOOM;
                 }
-                LogUtils.myD("tag","pointdown");
                 break;
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_POINTER_UP:
@@ -243,7 +249,6 @@ public class UsImageView extends AppCompatImageView {
                 if (values[Matrix.MTRANS_Y] > 0) {
                     zoomMatrix.postTranslate(0, -values[Matrix.MTRANS_Y]);
                 }
-                LogUtils.myD("tag","onpint=====up");
                 break;
             case MotionEvent.ACTION_MOVE:
                 if (mode == MOVE) {
@@ -266,7 +271,6 @@ public class UsImageView extends AppCompatImageView {
                         //缩放倍数
                         scale = checkFitScale(scale, values);
                         zoomMatrix.postScale(scale, scale, midPoint.x, midPoint.y);
-                        LogUtils.myD("tag","suofang"+scale);
                     }
                 }
                 break;
@@ -396,9 +400,16 @@ public class UsImageView extends AppCompatImageView {
         if (probe.getMode() == Probe.EnumMode.MODE_C) {
             drawOutline(canvas);
         }
+        for (int i=0;i<dPoint.size();i++){
+            canvas.drawPoint(dPoint.get(i).x,dPoint.get(i).y,paint);
+            if (i>0 && (i-1)%2==0){
+                canvas.drawLine(dPoint.get(i-1).x,dPoint.get(i-1).y,dPoint.get(i).x,dPoint.get(i).y,paint);
+            }
+        }
         drawDepthLine(canvas);
         drawCenterLine(canvas);
         getScale();
+        getOffsetX();
     }
 
     //画中心线
@@ -407,7 +418,7 @@ public class UsImageView extends AppCompatImageView {
         float[] values = new float[9];
         zoomMatrix.getValues(values);
         for (int i=0;i<=10;i++){
-            canvas.drawPoint(width*currentScale+values[Matrix.MTRANS_X],height*(i+1)*currentScale+values[Matrix.MTRANS_Y],paint);
+            canvas.drawPoint((width-offsetX)*currentScale+values[Matrix.MTRANS_X],height*i*currentScale+values[Matrix.MTRANS_Y],paint);
         }
     }
 
@@ -416,10 +427,6 @@ public class UsImageView extends AppCompatImageView {
     {
         float[] values = new float[9];
         zoomMatrix.getValues(values);
-        for (int i=0;i<values.length;i++){
-            LogUtils.myI("values","value["+i+"]==="+values[i]);
-        }
-        LogUtils.myE("currentScale","currentScale==="+currentScale);
         canvas.drawLine(10,0,10,height*10-values[Matrix.MTRANS_Y],paint);
         for (int i=0;i<=10;i++){
             canvas.drawLine(10,height*i*currentScale+values[Matrix.MTRANS_Y],20,height*i*currentScale+values[Matrix.MTRANS_Y],paint);
@@ -440,8 +447,18 @@ public class UsImageView extends AppCompatImageView {
         }else{
             currentScale = values[Matrix.MSCALE_X]/startScale;
         }
-        LogUtils.myE("endScale","endScale==="+startScale);
         return currentScale;
+    }
+    /**
+     *得到当前平移量
+     */
+    private float getOffsetX(){
+        float[] values = new float[9];
+        zoomMatrix.getValues(values);
+        if (offsetX<=0){
+            offsetX = values[Matrix.MTRANS_X];
+        }
+        return offsetX;
     }
 
 
@@ -1103,4 +1120,11 @@ public class UsImageView extends AppCompatImageView {
         width = getWidth()/2;
         height = getHeight()/10;
     }
+
+    public void removeDistanceCurrentPoint(){
+        if (dPoint!=null && dPoint.size()>0){
+            dPoint.remove(dPoint.size()-1);
+            postInvalidate();
+        }
+    };
 }
