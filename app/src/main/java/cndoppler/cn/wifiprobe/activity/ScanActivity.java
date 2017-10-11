@@ -3,10 +3,12 @@ package cndoppler.cn.wifiprobe.activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.NumberPicker;
+import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import org.litepal.crud.DataSupport;
@@ -56,6 +58,7 @@ public class ScanActivity extends BaseActivity implements Probe.ScanListener,Pro
     private Button mMeasureBtn;
     private BasePopuWindows popuWindows;
     private Button removeCurrentPointBtn;
+    private RadioGroup measureRg;
 
     @Override
     public void setContent() {
@@ -433,6 +436,7 @@ public class ScanActivity extends BaseActivity implements Probe.ScanListener,Pro
         View showView = View.inflate(this,R.layout.item_measure,null);
         popuWindows = new BasePopuWindows(this,BasePopuWindows.TYPE_MATCH_PARENT,showView,false);
         removeCurrentPointBtn = showView.findViewById(R.id.back_btn);
+        measureRg = showView.findViewById(R.id.measure_rg);
         setListener();
     }
 
@@ -444,6 +448,24 @@ public class ScanActivity extends BaseActivity implements Probe.ScanListener,Pro
             public void onClick(View view)
             {
                 mImageView.removeDistanceCurrentPoint();
+            }
+        });
+        measureRg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
+        {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, @IdRes int i)
+            {
+                switch (i){
+                    case R.id.dmeasure_rb:
+                        mImageView.setMeasureType(mImageView.DISTANCE);
+                        break;
+                    case R.id.rmeasure_rb:
+                        mImageView.setMeasureType(mImageView.RECTANGLE);
+                        break;
+                    case R.id.cmeasure_rb:
+                        mImageView.setMeasureType(mImageView.OVAL);
+                        break;
+                }
             }
         });
     }

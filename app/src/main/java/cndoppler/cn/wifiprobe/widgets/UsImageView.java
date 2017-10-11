@@ -22,7 +22,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cndoppler.cn.wifiprobe.R;
+import cndoppler.cn.wifiprobe.utils.BasePoint;
+import cndoppler.cn.wifiprobe.utils.LineMeasurePoint;
 import cndoppler.cn.wifiprobe.utils.LogUtils;
+import cndoppler.cn.wifiprobe.utils.OvalMeasurePoint;
+import cndoppler.cn.wifiprobe.utils.RectMeasurePoint;
 import leltek.viewer.model.Probe;
 import leltek.viewer.model.WifiProbe;
 import leltek.viewer.util.ImageUtils;
@@ -102,7 +106,12 @@ public class UsImageView extends AppCompatImageView {
     private float startScale;
     private float currentScale;
     private float offsetX;
-    private List<Point> dPoint = new ArrayList<>();
+    private List<BasePoint> dPoint = new ArrayList<>();
+    public final int DISTANCE = 1;
+    public final int RECTANGLE = 2;
+    public final int OVAL = 3;
+    private int measureType = 1;
+    private int currentIndex;
 
     public UsImageView(Context context) {
         super(context);
@@ -125,7 +134,6 @@ public class UsImageView extends AppCompatImageView {
         int widthPx = probe.getImageWidthPx();
         int pixCount = heightPx * widthPx;
         setImageBitmap(ImageUtils.createBitmap(new byte[pixCount], widthPx, heightPx, pixCount));
-        LogUtils.myD("tag",widthPx+"===========================widthPx");
         fitWidth = false;
 
         setFocusable(true);
@@ -212,7 +220,17 @@ public class UsImageView extends AppCompatImageView {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_UP){
-            dPoint.add(new Point((int)event.getX(),(int)event.getY()));
+            switch (measureType){
+                case DISTANCE:
+                    dPoint.add(new LineMeasurePoint((int) event.getX(), (int) event.getY()));
+                    break;
+                case RECTANGLE:
+                    dPoint.add(new RectMeasurePoint((int) event.getX(), (int) event.getY()));
+                    break;
+                case OVAL:
+                    dPoint.add(new OvalMeasurePoint((int) event.getX(), (int) event.getY()));
+                    break;
+            }
             postInvalidate();
         }
         if (probe.getMode() == Probe.EnumMode.MODE_B) {
@@ -223,6 +241,7 @@ public class UsImageView extends AppCompatImageView {
         }
         return true;
     }
+
 
     public void bModeOnTouchEvent(MotionEvent event) {
         float[] values = new float[9];
@@ -400,16 +419,28 @@ public class UsImageView extends AppCompatImageView {
         if (probe.getMode() == Probe.EnumMode.MODE_C) {
             drawOutline(canvas);
         }
-        for (int i=0;i<dPoint.size();i++){
-            canvas.drawPoint(dPoint.get(i).x,dPoint.get(i).y,paint);
-            if (i>0 && (i-1)%2==0){
-                canvas.drawLine(dPoint.get(i-1).x,dPoint.get(i-1).y,dPoint.get(i).x,dPoint.get(i).y,paint);
-            }
-        }
+        drawMeasure(canvas);
         drawDepthLine(canvas);
         drawCenterLine(canvas);
         getScale();
         getOffsetX();
+    }
+
+    //画测量图形
+    private void drawMeasure(Canvas canvas)
+    {
+        for (int i=0;i<dPoint.size();i++){
+            canvas.drawPoint(dPoint.get(i).x,dPoint.get(i).y,paint);
+            if (i>0 && (i-1)%2==0){
+                if (dPoint.get(i) instanceof LineMeasurePoint) {
+                    dPoint.get(i).startDraw(dPoint.get(i - 1).x, dPoint.get(i - 1).y, dPoint.get(i).x, dPoint.get(i).y,canvas, paint);
+                }else if (dPoint.get(i) instanceof RectMeasurePoint){
+                    dPoint.get(i).startDraw(dPoint.get(i - 1).x, dPoint.get(i - 1).y, dPoint.get(i).x, dPoint.get(i).y,canvas, paint);
+                }else if (dPoint.get(i) instanceof OvalMeasurePoint){
+                    dPoint.get(i).startDraw(dPoint.get(i - 1).x, dPoint.get(i - 1).y, dPoint.get(i).x, dPoint.get(i).y,canvas, paint);
+                }
+            }
+        }
     }
 
     //画中心线
@@ -1127,4 +1158,8 @@ public class UsImageView extends AppCompatImageView {
             postInvalidate();
         }
     };
+
+    public void setMeasureType(int measureType){
+        this.measureType = measureType;
+    }
 }
