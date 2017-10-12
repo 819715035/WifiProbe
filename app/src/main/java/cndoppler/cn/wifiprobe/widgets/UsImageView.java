@@ -104,7 +104,7 @@ public class UsImageView extends AppCompatImageView {
     private int width;
     private int height;
     private float startScale;
-    private float currentScale;
+    private float currentScale = 1;
     private float offsetX;
     private List<BasePoint> dPoint = new ArrayList<>();
     public final int DISTANCE = 1;
@@ -220,15 +220,21 @@ public class UsImageView extends AppCompatImageView {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_UP){
+            currentIndex++;
+            float[] values = new float[9];
+            zoomMatrix.getValues(values);
             switch (measureType){
                 case DISTANCE:
-                    dPoint.add(new LineMeasurePoint((int) event.getX(), (int) event.getY()));
+                    dPoint.add(new LineMeasurePoint((int) ((event.getX()-values[Matrix.MTRANS_X])/currentScale+offsetX),
+                            (int)((event.getY()-values[Matrix.MTRANS_Y])/currentScale),currentIndex));
                     break;
                 case RECTANGLE:
-                    dPoint.add(new RectMeasurePoint((int) event.getX(), (int) event.getY()));
+                    dPoint.add(new RectMeasurePoint((int) ((event.getX()-values[Matrix.MTRANS_X])/currentScale+offsetX),
+                            (int)((event.getY()-values[Matrix.MTRANS_Y])/currentScale),currentIndex));
                     break;
                 case OVAL:
-                    dPoint.add(new OvalMeasurePoint((int) event.getX(), (int) event.getY()));
+                    dPoint.add(new OvalMeasurePoint((int) ((event.getX()-values[Matrix.MTRANS_X])/currentScale+offsetX),
+                            (int)((event.getY()-values[Matrix.MTRANS_Y])/currentScale),currentIndex));
                     break;
             }
             postInvalidate();
@@ -429,16 +435,16 @@ public class UsImageView extends AppCompatImageView {
     //画测量图形
     private void drawMeasure(Canvas canvas)
     {
+        float[] values = new float[9];
+        zoomMatrix.getValues(values);
         for (int i=0;i<dPoint.size();i++){
-            canvas.drawPoint(dPoint.get(i).x,dPoint.get(i).y,paint);
+            canvas.drawPoint((dPoint.get(i).x-offsetX)*currentScale+values[Matrix.MTRANS_X],dPoint.get(i).y*currentScale+values[Matrix.MTRANS_Y],paint);
             if (i>0 && (i-1)%2==0){
-                if (dPoint.get(i) instanceof LineMeasurePoint) {
-                    dPoint.get(i).startDraw(dPoint.get(i - 1).x, dPoint.get(i - 1).y, dPoint.get(i).x, dPoint.get(i).y,canvas, paint);
-                }else if (dPoint.get(i) instanceof RectMeasurePoint){
-                    dPoint.get(i).startDraw(dPoint.get(i - 1).x, dPoint.get(i - 1).y, dPoint.get(i).x, dPoint.get(i).y,canvas, paint);
-                }else if (dPoint.get(i) instanceof OvalMeasurePoint){
-                    dPoint.get(i).startDraw(dPoint.get(i - 1).x, dPoint.get(i - 1).y, dPoint.get(i).x, dPoint.get(i).y,canvas, paint);
-                }
+                    dPoint.get(i).startDraw((dPoint.get(i-1).x-offsetX)*currentScale+values[Matrix.MTRANS_X],
+                            dPoint.get(i-1).y*currentScale+values[Matrix.MTRANS_Y],
+                            (dPoint.get(i).x-offsetX)*currentScale+values[Matrix.MTRANS_X],
+                            dPoint.get(i).y*currentScale+values[Matrix.MTRANS_Y],
+                            getHeight(),currentScale,canvas, paint);
             }
         }
     }
@@ -1156,6 +1162,7 @@ public class UsImageView extends AppCompatImageView {
         if (dPoint!=null && dPoint.size()>0){
             dPoint.remove(dPoint.size()-1);
             postInvalidate();
+            currentIndex--;
         }
     };
 
