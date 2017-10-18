@@ -21,6 +21,7 @@ public class RectMeasurePoint extends BasePoint
     {
         paint.setColor(Color.parseColor("#e8a94f"));
         canvas.drawRect(startX,startY,endX,endY,paint);
+        canvas.drawText("距离："+getMeasure(),endX+20,endY+30,paint);
     }
 
     @Override
@@ -28,6 +29,6 @@ public class RectMeasurePoint extends BasePoint
     {
         float x = Math.abs(endX-startX);
         float y = Math.abs(endY - startY);
-        return x*y;
+        return (float) (x*y*25/Math.pow(height*scale,2));
     }
 }
