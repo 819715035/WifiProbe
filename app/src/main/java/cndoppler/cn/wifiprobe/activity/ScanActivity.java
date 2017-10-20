@@ -11,9 +11,12 @@ import android.widget.NumberPicker;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.TextView;
+
 import org.litepal.crud.DataSupport;
+
 import java.io.File;
 import java.util.Date;
+
 import cndoppler.cn.wifiprobe.R;
 import cndoppler.cn.wifiprobe.bean.CheckProgrem;
 import cndoppler.cn.wifiprobe.bean.Patient;
@@ -67,7 +70,7 @@ public class ScanActivity extends BaseActivity implements Probe.ScanListener,Pro
 
     @Override
     public void initWidget() {
-        //得到探头对象
+        // 得到探头对象
         probe = WifiProbe.getDefault();
         probe.setScanListener(this);
         probe.setCineBufferListener(this);

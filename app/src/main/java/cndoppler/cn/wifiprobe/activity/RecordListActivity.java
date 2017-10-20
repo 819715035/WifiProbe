@@ -22,7 +22,6 @@ import cndoppler.cn.wifiprobe.adapter.PatientAdapter;
 import cndoppler.cn.wifiprobe.adapter.SearchTextviewAdapter;
 import cndoppler.cn.wifiprobe.bean.CheckProgrem;
 import cndoppler.cn.wifiprobe.bean.Patient;
-import cndoppler.cn.wifiprobe.bean.PicData;
 import cndoppler.cn.wifiprobe.utils.BaseActivity;
 import cndoppler.cn.wifiprobe.utils.LogUtils;
 import cndoppler.cn.wifiprobe.utils.ToastUtils;

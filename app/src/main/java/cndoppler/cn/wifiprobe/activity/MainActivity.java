@@ -79,10 +79,11 @@ public class MainActivity extends BaseActivity implements Probe.SystemListener, 
                     //跳转到扫描页面
                     openActivity(ScanActivity.class);
                     return;
-                }
-                if (!probe.isRequesting()) {
-                    ToastUtils.showToastShort(MainActivity.this,"connecting to probe");
-                    probe.initialize();
+                }else{
+                    if (!probe.isRequesting()) {
+                        ToastUtils.showToastShort(MainActivity.this,"connecting to probe");
+                        probe.initialize();
+                    }
                 }
             }
         });
